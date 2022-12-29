@@ -46,13 +46,14 @@ def index(request):
     response = requests.get('http://luthers-list.herokuapp.com/api/deptlist/')
     data = response.json()
     results = data
+
     Dept.objects.all().delete()
     for r in results:
         result_info = Dept(subject = r['subject'])
         result_info.save()
-        dept_results = Dept.objects.all()
-
+    dept_results = Dept.objects.all()
     deptlist = Dept.objects.all().order_by('subject')
+
     query_results = {}
     # deal with the condition when user trys to add a course to the shoppingcart
     # if the user clicks on star, then do not clear the Class database 
@@ -174,12 +175,12 @@ def index(request):
                     facility_description = facility_description,
             )
                 result_info.save()
-        # remove potential duplicates for classes in the database
-        for duplicates in Class.objects.values("course_number").annotate(
-                records=Count("course_number")
-            ).filter(records__gt=1):
-            for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
-                tag.delete()
+            # remove potential duplicates for classes in the database
+            for duplicates in Class.objects.values("course_number").annotate(
+                    records=Count("course_number")
+                ).filter(records__gt=1):
+                for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
+                    tag.delete()
         # this session stores the department and the catalog_number of the last view so that the user will be back to the last page after add a course to shoppingcart
         request.session['sq']=sq
         request.session['num_sq']=num_sq
@@ -204,7 +205,7 @@ def index(request):
         
     return render(request, 'classify/index.html', {
         # map feature
-        "google_api_key": settings.GOOGLE_API_KEY,
+        #"google_api_key": settings.GOOGLE_API_KEY,
         "query_results": query_results,
         'deptlist': deptlist,
     })

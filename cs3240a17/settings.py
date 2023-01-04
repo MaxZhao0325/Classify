@@ -90,6 +90,24 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
+    # 'default': {
+
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+    #     'NAME': 'd46ro9ihpd85p',
+
+    #     'USER': 'ocyhpphtqopfxk',
+
+    #     'PASSWORD': 'bf8d8ce0e9192c99eb764d312935e9f992d42e0960ec7a20692a296a3dde7a07',
+
+    #     'HOST': 'ec2-18-209-78-11.compute-1.amazonaws.com',
+
+    #     'PORT': '5432',
+        
+    #     'TEST': {
+    #         'NAME': 'Django CI',
+    #     },
+    # }
 }
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"

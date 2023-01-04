@@ -25,8 +25,6 @@ from classify.models import Class, Dept, Profile, ProfileForm, Schedule, Schedul
 from django.conf import settings
 import json
 from django.contrib.auth.models import User
-from django.utils import timezone
-import datetime
 
 def search(request):
     if 'q' in request.GET:
@@ -46,14 +44,13 @@ def index(request):
     response = requests.get('http://luthers-list.herokuapp.com/api/deptlist/')
     data = response.json()
     results = data
-
     Dept.objects.all().delete()
     for r in results:
         result_info = Dept(subject = r['subject'])
         result_info.save()
-    dept_results = Dept.objects.all()
-    deptlist = Dept.objects.all().order_by('subject')
+        dept_results = Dept.objects.all()
 
+    deptlist = Dept.objects.all().order_by('subject')
     query_results = {}
     # deal with the condition when user trys to add a course to the shoppingcart
     # if the user clicks on star, then do not clear the Class database 
@@ -175,12 +172,12 @@ def index(request):
                     facility_description = facility_description,
             )
                 result_info.save()
-            # remove potential duplicates for classes in the database
-            for duplicates in Class.objects.values("course_number").annotate(
-                    records=Count("course_number")
-                ).filter(records__gt=1):
-                for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
-                    tag.delete()
+        # remove potential duplicates for classes in the database
+        for duplicates in Class.objects.values("course_number").annotate(
+                records=Count("course_number")
+            ).filter(records__gt=1):
+            for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
+                tag.delete()
         # this session stores the department and the catalog_number of the last view so that the user will be back to the last page after add a course to shoppingcart
         request.session['sq']=sq
         request.session['num_sq']=num_sq
@@ -205,7 +202,7 @@ def index(request):
         
     return render(request, 'classify/index.html', {
         # map feature
-        #"google_api_key": settings.GOOGLE_API_KEY,
+        "google_api_key": settings.GOOGLE_API_KEY,
         "query_results": query_results,
         'deptlist': deptlist,
     })
@@ -373,22 +370,6 @@ def schedule(request):
             if request.user not in comment.voted_users.all():
                 comment.voted_users.add(request.user)
             comment.save()
-
-        # similar code to the above for if a user upvotes or downvotes the schedule as a whole
-        if request.POST.get('schedule_up') or request.POST.get('schedule_down'):
-            if(request.POST.get('schedule_up')):
-                schedule_up = request.POST.get('schedule_up')
-                schedule = request.user.profile.schedule
-                if request.user not in schedule.voted_users.all():
-                    schedule.ups+=1
-            elif(request.POST.get('schedule_down')):
-                schedule_down = request.POST.get('schedule_down')
-                schedule = request.user.profile.schedule
-                if request.user not in schedule.voted_users.all():
-                    schedule.downs+=1            
-            if request.user not in schedule.voted_users.all():
-                schedule.voted_users.add(request.user)
-            schedule.save()
 
         return render(request, 'classify/schedule.html', {"user":request.user, "schedule": request.user.profile.schedule, 'comments':comments, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
     else:
@@ -558,7 +539,6 @@ def friends(request):
                 comment = Comment(
                     schedule = friend_schedule,
                     content = content,
-                    pub_date = timezone.now(),
                 )
                 comment.save()
                 
@@ -585,22 +565,6 @@ def friends(request):
             for duplicates in comments.values("content").annotate(records=Count("content")).filter(records__gt=1):
                 for tag in comments.filter(content=duplicates["content"])[1:]:
                     tag.delete()
-            # order the comments by its publishing time
-            comments=comments.order_by('pub_date')
-
-            # similar code to the above for if a user upvotes or downvotes the schedule as a whole
-            if request.POST.get('schedule_up') or request.POST.get('schedule_down'):
-                if(request.POST.get('schedule_up')):
-                    schedule_up = request.POST.get('schedule_up')
-                    if request.user not in friend_schedule.voted_users.all():
-                        friend_schedule.ups+=1
-                elif(request.POST.get('schedule_down')):
-                    schedule_down = request.POST.get('schedule_down')
-                    if request.user not in friend_schedule.voted_users.all():
-                        friend_schedule.downs+=1            
-                if request.user not in friend_schedule.voted_users.all():
-                    friend_schedule.voted_users.add(request.user)
-                friend_schedule.save()
 
             # Put the courses into the correct days, so that the html file can access them
             monday_courses = []

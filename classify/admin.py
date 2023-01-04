@@ -17,10 +17,6 @@ class ClassAdmin(admin.ModelAdmin):
     #search_fields = ['question_text']
 admin.site.register(Class, ClassAdmin)
 
-class DeptAdmin(admin.ModelAdmin):
-    display_list = ('subject')
-admin.site.register(Dept, DeptAdmin)
-
 class ProfileAdmin(admin.ModelAdmin):
     display_list = ('user', 'courses', 'friends')
 admin.site.register(Profile, ProfileAdmin)

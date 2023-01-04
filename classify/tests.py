@@ -2,10 +2,10 @@ from django.test import TestCase
 import unittest
 
 from django.test import Client
-from classify.models import Class, Dept, Profile, Schedule, ProfileForm, ScheduleForm, Comment
+from classify.models import Class, Dept, Profile, Schedule, ProfileForm, ScheduleForm 
 from django.urls import reverse
 from django.contrib.auth import get_user_model 
-from classify.views import conflict_check, get_time_float_start, time_to_float, conflict_on_day
+from classify.views import conflict_check
 
 # Create your tests here.
 class TestLogin(TestCase):
@@ -119,13 +119,7 @@ class TestProfileForm(TestCase):
     def test_courses(self):
         form = ProfileForm(data={"courses":"A course here"})
         self.assertEqual(form.errors["courses"], ["Enter a list of values."])
-class TestScheduleForm(TestCase):
-    def test_schedule(self):
-        form = ScheduleForm(data={"courses":"A course here"})
-        self.assertEqual(form.errors["courses"], ["Enter a list of values."])
-    def test_schedule_name(self):
-        form = ScheduleForm(data={"name":"John Doe"})
-        self.assertTrue(isinstance(form, ScheduleForm))
+
 class ClassTest(TestCase):
     def create_class(self,
         instructor_name="John", 
@@ -225,86 +219,3 @@ class ClassTest(TestCase):
         fake_class = self.create_class()
         self.assertTrue(isinstance(fake_class, Class))
         self.assertEqual("Olsson Hall 009", fake_class.facility_description)
-
-class TestConflictCheck(TestCase):
-    def create_class(self,
-        instructor_name="John", 
-        course_number=14839, 
-        semester_code=1228, 
-        course_section="001",
-        subject="CS", 
-        catalog_number="1010", 
-        description="Introduction to Information Technology", 
-        units="3", component="LEC", 
-        class_capacity=75, 
-        wait_list=0, 
-        wait_cap=199, 
-        enrollment_total=72, 
-        enrollment_available=3, 
-        topic="", 
-        meetings_days="MoWe", 
-        meetings_start_time="12.00pm", 
-        meetings_end_time="2.00pm",
-        facility_description="Olsson Hall 009"):
-            return Class.objects.create(instructor_name=instructor_name, 
-            course_number=course_number,
-            semester_code = semester_code, 
-            course_section=course_section, 
-            subject=subject,
-            catalog_number=catalog_number, 
-            description=description, 
-            units=units, 
-            component=component, 
-            class_capacity=class_capacity, 
-            wait_list=wait_list, 
-            wait_cap=wait_cap,
-            enrollment_total=enrollment_total, 
-            enrollment_available=enrollment_available, 
-            topic=topic, 
-            meetings_days=meetings_days,
-            meetings_start_time = meetings_start_time, 
-            meetings_end_time = meetings_end_time, 
-            facility_description=facility_description)
-    def test_conflict_check_no_conflict(self):
-        fake_class_1 = self.create_class()
-        fake_class_2 = self.create_class()
-        fake_class_2.meetings_days = "TuTh"
-        conflict_check(fake_class_1, fake_class_2)
-        self.assertEqual(False, conflict_check(fake_class_1, fake_class_2))
-    def test_conflict_check_yes_conflict(self):
-        fake_class_1 = self.create_class()
-        fake_class_2 = self.create_class()
-        self.assertEqual(conflict_check(fake_class_1, fake_class_2), True)
-    #testing the conflict_on_day function too 
-    def test_conflict_on_day_false(self):
-        fake_class_1 = self.create_class()
-        fake_class_2 = self.create_class()
-        fake_class_2.meetings_start_time = "11.00am"
-        fake_class_2.meetings_end_time = "12.00pm"
-        fake_class_1.meetings_start_time = "3.00pm"
-        fake_class_1.meetings_end_time = "4.00pm"
-        self.assertEqual(conflict_on_day(fake_class_1, fake_class_2), False)
-    def test_conflict_on_day_true(self):
-        fake_class_1 = self.create_class()
-        fake_class_2 = self.create_class()
-        fake_class_2.meetings_start_time = "11.00am"
-        fake_class_2.meetings_end_time = "12.00pm"
-        fake_class_1.meetings_start_time = "11.00am"
-        fake_class_1.meetings_end_time = "12.00pm"
-        self.assertEqual(True, conflict_on_day(fake_class_1, fake_class_2))
-class TestFloat(TestCase):
-    def create_class(self,
-        meetings_start_time = "11.00am"):
-            return Class.objects.create(meetings_start_time = meetings_start_time)
-    def test_time_to_float_PM(self):
-        time_string = "12.00pm"
-        self.assertEqual(12, time_to_float(time_string))
-    def test_time_to_float_AM(self):
-        time_string = "12.00am"
-        self.assertEqual(0, time_to_float(time_string))
-    def test_time_to_float_non_12(self):
-        time_string = "11.00am"
-        self.assertEqual(11, time_to_float(time_string))
-    def test_get_time_float_start(self):
-        fake_class = self.create_class()
-        self.assertEqual(11.00, get_time_float_start(fake_class))

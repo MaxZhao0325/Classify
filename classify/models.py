@@ -1,10 +1,12 @@
 from email.policy import default
+from time import time
 from unittest.util import _MAX_LENGTH
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django import forms
+from datetime import datetime   
 # from django_google_maps import fields as map_fields
 # Create your models here.
 
@@ -73,6 +75,11 @@ class Schedule(models.Model):
     name = models.CharField(max_length=100, default="")
     courses = models.ManyToManyField(Class)
     
+    # similar code to a comment so that the entire schedule can be upvoted or downvoted
+    ups = models.IntegerField(default = 0)
+    downs = models.IntegerField(default = 0)
+    voted_users = models.ManyToManyField(User)
+
     @receiver(post_save, sender=User)
     def create_profile_schedule(sender, instance, created, **kwargs):
         if created:
@@ -90,6 +97,8 @@ class Comment(models.Model):
     ups = models.IntegerField(default = 0)
     downs = models.IntegerField(default = 0)
     voted_users = models.ManyToManyField(User)
+    # need to record the time the comment is published so that we can list them by the time they were created, and it won't be affected by the votes
+    pub_date = models.DateTimeField('date published', default=datetime.now())
 
 class ScheduleForm(forms.ModelForm):
     class Meta: 

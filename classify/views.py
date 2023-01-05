@@ -1,4 +1,3 @@
-
 from email import message
 from http.client import HTTPResponse
 from ssl import AlertDescription
@@ -25,6 +24,8 @@ from classify.models import Class, Dept, Profile, ProfileForm, Schedule, Schedul
 from django.conf import settings
 import json
 from django.contrib.auth.models import User
+from django.utils import timezone
+import datetime
 
 def search(request):
     if 'q' in request.GET:
@@ -371,6 +372,22 @@ def schedule(request):
                 comment.voted_users.add(request.user)
             comment.save()
 
+        # similar code to the above for if a user upvotes or downvotes the schedule as a whole
+        if request.POST.get('schedule_up') or request.POST.get('schedule_down'):
+            if(request.POST.get('schedule_up')):
+                schedule_up = request.POST.get('schedule_up')
+                schedule = request.user.profile.schedule
+                if request.user not in schedule.voted_users.all():
+                    schedule.ups+=1
+            elif(request.POST.get('schedule_down')):
+                schedule_down = request.POST.get('schedule_down')
+                schedule = request.user.profile.schedule
+                if request.user not in schedule.voted_users.all():
+                    schedule.downs+=1            
+            if request.user not in schedule.voted_users.all():
+                schedule.voted_users.add(request.user)
+            schedule.save()
+
         return render(request, 'classify/schedule.html', {"user":request.user, "schedule": request.user.profile.schedule, 'comments':comments, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
     else:
         return redirect("/accounts/google/login/")
@@ -539,6 +556,7 @@ def friends(request):
                 comment = Comment(
                     schedule = friend_schedule,
                     content = content,
+                    pub_date = timezone.now(),
                 )
                 comment.save()
                 
@@ -565,6 +583,22 @@ def friends(request):
             for duplicates in comments.values("content").annotate(records=Count("content")).filter(records__gt=1):
                 for tag in comments.filter(content=duplicates["content"])[1:]:
                     tag.delete()
+            # order the comments by its publishing time
+            comments=comments.order_by('pub_date')
+
+            # similar code to the above for if a user upvotes or downvotes the schedule as a whole
+            if request.POST.get('schedule_up') or request.POST.get('schedule_down'):
+                if(request.POST.get('schedule_up')):
+                    schedule_up = request.POST.get('schedule_up')
+                    if request.user not in friend_schedule.voted_users.all():
+                        friend_schedule.ups+=1
+                elif(request.POST.get('schedule_down')):
+                    schedule_down = request.POST.get('schedule_down')
+                    if request.user not in friend_schedule.voted_users.all():
+                        friend_schedule.downs+=1            
+                if request.user not in friend_schedule.voted_users.all():
+                    friend_schedule.voted_users.add(request.user)
+                friend_schedule.save()
 
             # Put the courses into the correct days, so that the html file can access them
             monday_courses = []

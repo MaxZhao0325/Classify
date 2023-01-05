@@ -171,7 +171,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend'
 ]
 
-SITE_ID = 5 #2 if using localhost, 3 if using Heroku
+SITE_ID = 6 #5 if using localhost, 6 if using Heroku
 LOGIN_REDIRECT_URL = '/classify'
 LOGOUT_REDIRECT_URL = '/classify'
 

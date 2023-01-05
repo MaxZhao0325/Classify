@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-%to&1l1qjf@vg4o885ac4(&+@3*43^#)@tf@r#s74m2)%l=c4^"
+SECRET_KEY = "django-insecure-rpn@qrk9#y+fwqdfsrk30lm)et)*8d@s#(vq8so))fhc6fc$w!"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['classify.herokuapp.com', '127.0.0.1', 'localhost']
 
@@ -85,30 +86,39 @@ WSGI_APPLICATION = "cs3240a17.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default':{
+            'ENGINE' : 'django.db.backends.sqlite3',
+            'NAME' : BASE_DIR / 'db.sqlite3', 
+        }
     }
-    # 'default': {
+else:
+    DATABASES = {
+        # "default": {
+        #     "ENGINE": "django.db.backends.sqlite3",
+        #     "NAME": BASE_DIR / "db.sqlite3",
+        # }
+        'default': {
 
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
-    #     'NAME': 'd46ro9ihpd85p',
+            'NAME': 'd46ro9ihpd85p',
 
-    #     'USER': 'ocyhpphtqopfxk',
+            'USER': 'ocyhpphtqopfxk',
 
-    #     'PASSWORD': 'bf8d8ce0e9192c99eb764d312935e9f992d42e0960ec7a20692a296a3dde7a07',
+            'PASSWORD': 'bf8d8ce0e9192c99eb764d312935e9f992d42e0960ec7a20692a296a3dde7a07',
 
-    #     'HOST': 'ec2-18-209-78-11.compute-1.amazonaws.com',
+            'HOST': 'ec2-18-209-78-11.compute-1.amazonaws.com',
 
-    #     'PORT': '5432',
-        
-    #     'TEST': {
-    #         'NAME': 'Django CI',
-    #     },
-    # }
-}
+            'PORT': '5432',
+            
+            'TEST': {
+                'NAME': 'Django CI',
+            },
+        }
+    }
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
@@ -161,7 +171,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend'
 ]
 
-SITE_ID = 3 #2 if using localhost, 3 if using Heroku
+SITE_ID = 4 #2 if using localhost, 3 if using Heroku
 LOGIN_REDIRECT_URL = '/classify'
 LOGOUT_REDIRECT_URL = '/classify'
 
@@ -203,4 +213,37 @@ MESSAGE_TAGS = {
         messages.SUCCESS: 'alert-success',
         messages.WARNING: 'alert-warning',
         messages.ERROR: 'alert-danger',
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'mysite.log',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers':['file'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+        'MYAPP': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+    }
 }

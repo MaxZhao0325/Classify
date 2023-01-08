@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django import forms
 from datetime import datetime   
+import django
 # from django_google_maps import fields as map_fields
 # Create your models here.
 
@@ -28,6 +29,7 @@ class Class(models.Model):
     wait_cap = models.IntegerField(default = 0)
     enrollment_total = models.IntegerField(default = 0)
     enrollment_available = models.IntegerField(default = 0)
+    enrollment_status = models.CharField(max_length=5, default="")
     topic = models.CharField(max_length=200, default="")
     meetings_days = models.CharField(max_length=15, default="")
     meetings_start_time = models.SlugField(max_length = 10, default="")
@@ -98,7 +100,7 @@ class Comment(models.Model):
     downs = models.IntegerField(default = 0)
     voted_users = models.ManyToManyField(User)
     # need to record the time the comment is published so that we can list them by the time they were created, and it won't be affected by the votes
-    pub_date = models.DateTimeField('date published', default=datetime.now())
+    pub_date = models.DateTimeField('date published', default=django.utils.timezone.now)
 
 class ScheduleForm(forms.ModelForm):
     class Meta: 

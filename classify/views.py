@@ -110,78 +110,78 @@ def index(request):
             request.session['stored_subject']=[]
 
         # if the department is first time viewed, add that department to the session and store the course data for that department
-        if sq is not None and sq != '' and sq not in request.session['stored_subject']:
-            request.session['stored_subject'].append(sq)
-            response = requests.get('http://luthers-list.herokuapp.com/api/dept/%s/' % sq)
-            data = response.json()
-            results = data
+        # if sq is not None and sq != '' and sq not in request.session['stored_subject']:
+        #     request.session['stored_subject'].append(sq)
+        #     response = requests.get('http://luthers-list.herokuapp.com/api/dept/%s/' % sq)
+        #     data = response.json()
+        #     results = data
 
-            for r in results:
-                # convert the start_time and end_time into readable manner
-                if (r["meetings"]):
-                    start_time = r["meetings"][0]["start_time"][0:5]
-                    end_time = r["meetings"][0]["end_time"][0:5]
-                    meeting_days = r['meetings'][0]['days']
-                    facility_description = r['meetings'][0]['facility_description']
-                else:
-                    start_time=''
-                    end_time=''
-                    meeting_days=''
-                    facility_description=''
-                if(start_time!=""):
-                    if(float(start_time)<10):
-                        start_time = start_time[1:]
-                    if(float(start_time)>=12):
-                        if(float(start_time)>=13):
-                            start_time = str("{:.2f}".format(float(start_time)-12))+"pm"
-                        else:
-                            start_time=start_time+"pm"
-                    else:
-                        start_time = start_time+"am"
+        #     for r in results:
+        #         # convert the start_time and end_time into readable manner
+        #         if (r["meetings"]):
+        #             start_time = r["meetings"][0]["start_time"][0:5]
+        #             end_time = r["meetings"][0]["end_time"][0:5]
+        #             meeting_days = r['meetings'][0]['days']
+        #             facility_description = r['meetings'][0]['facility_description']
+        #         else:
+        #             start_time=''
+        #             end_time=''
+        #             meeting_days=''
+        #             facility_description=''
+        #         if(start_time!=""):
+        #             if(float(start_time)<10):
+        #                 start_time = start_time[1:]
+        #             if(float(start_time)>=12):
+        #                 if(float(start_time)>=13):
+        #                     start_time = str("{:.2f}".format(float(start_time)-12))+"pm"
+        #                 else:
+        #                     start_time=start_time+"pm"
+        #             else:
+        #                 start_time = start_time+"am"
                 
-                if(end_time!=""):
-                    if(float(end_time)<10):
-                        end_time = end_time[1:]
-                    if(float(end_time)>=12):
-                        if(float(end_time)>=13):
-                            end_time = str("{:.2f}".format(float(end_time)-12))+"pm"
-                        else:
-                            end_time=end_time+"pm"
-                    else:
-                        end_time = end_time+"am"
+        #         if(end_time!=""):
+        #             if(float(end_time)<10):
+        #                 end_time = end_time[1:]
+        #             if(float(end_time)>=12):
+        #                 if(float(end_time)>=13):
+        #                     end_time = str("{:.2f}".format(float(end_time)-12))+"pm"
+        #                 else:
+        #                     end_time=end_time+"pm"
+        #             else:
+        #                 end_time = end_time+"am"
                 
-                result_info = Class(
-                    instructor_name = r['instructor']['name'],
-                    instructor_email = r['instructor']['email'],
-                    course_number = r['course_number'],
-                    semester_code = r['semester_code'],
-                    course_section = r['course_section'],
-                    subject = r['subject'],
-                    catalog_number = r['catalog_number'],
-                    description = r['description'],
-                    units = r['units'],
-                    component = r['component'],
-                    class_capacity = r['class_capacity'],
-                    wait_list = r['wait_list'],
-                    wait_cap = r['wait_cap'],
-                    enrollment_total = r['enrollment_total'],
-                    enrollment_available = r['enrollment_available'],
-                    topic = r['topic'],
-                    meetings_days = meeting_days,
-                    meetings_start_time = start_time,
-                    meetings_end_time = end_time,
-                    facility_description = facility_description,
-            )
-                result_info.save()
-        # remove potential duplicates for classes in the database
-        for duplicates in Class.objects.values("course_number").annotate(
-                records=Count("course_number")
-            ).filter(records__gt=1):
-            for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
-                tag.delete()
-        # this session stores the department and the catalog_number of the last view so that the user will be back to the last page after add a course to shoppingcart
-        request.session['sq']=sq
-        request.session['num_sq']=num_sq
+        #         result_info = Class(
+        #             instructor_name = r['instructor']['name'],
+        #             instructor_email = r['instructor']['email'],
+        #             course_number = r['course_number'],
+        #             semester_code = r['semester_code'],
+        #             course_section = r['course_section'],
+        #             subject = r['subject'],
+        #             catalog_number = r['catalog_number'],
+        #             description = r['description'],
+        #             units = r['units'],
+        #             component = r['component'],
+        #             class_capacity = r['class_capacity'],
+        #             wait_list = r['wait_list'],
+        #             wait_cap = r['wait_cap'],
+        #             enrollment_total = r['enrollment_total'],
+        #             enrollment_available = r['enrollment_available'],
+        #             topic = r['topic'],
+        #             meetings_days = meeting_days,
+        #             meetings_start_time = start_time,
+        #             meetings_end_time = end_time,
+        #             facility_description = facility_description,
+        #     )
+        #         result_info.save()
+        # # remove potential duplicates for classes in the database
+        # for duplicates in Class.objects.values("course_number").annotate(
+        #         records=Count("course_number")
+        #     ).filter(records__gt=1):
+        #     for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
+        #         tag.delete()
+        # # this session stores the department and the catalog_number of the last view so that the user will be back to the last page after add a course to shoppingcart
+        # request.session['sq']=sq
+        # request.session['num_sq']=num_sq
 
     # if there is a valid search, return a specific results with subject and catalog to the user, else just return the subject
     

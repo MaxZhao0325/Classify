@@ -41,7 +41,7 @@ class Class(models.Model):
         return super().str()
 
 class Dept(models.Model):
-    subject = models.CharField(max_length=4)
+    subject = models.CharField(max_length=7)
     def str(self) -> str:
         return subject
 

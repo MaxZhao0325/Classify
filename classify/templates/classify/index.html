@@ -133,12 +133,47 @@
 
       <!-- display the search bar for the page -->
       <div class="container">
-        <form name="course_search" id="course_search" method="post">
+        <form name="course_search" id="course_search" method="post" autocomplete="off">
           {% csrf_token %}
           <div class='row'>
             <p>
-              <input type = "text" name = "dpt_search" placeholder="Search by Department" class = "text-center rounded" style="background-color: #F3F7F1;">
-              <input type = "text" name = "num_search" placeholder="Search by Catalog Number" class = "text-center rounded" style="background-color: #F3F7F1;">
+              <!-- search by subject name -->
+              <input list="sbj" type = "text" name = "subject_search" placeholder="Search by Subject" class = "text-center rounded" style="background-color: #F3F7F1;">
+              <datalist id="sbj">
+                {% for dpt in deptlist %}
+                <option value={{dpt.subject}}>
+                {% endfor %}                  
+              </datalist>
+              <!-- search by catalog number -->
+              <input type = "text" name = "cat_num_search" placeholder="Catalog Number" class = "text-center rounded" style="background-color: #F3F7F1;">
+              <!-- search by course number -->
+              <input type = "text" name = "course_num_search" placeholder="Course Number" class = "text-center rounded" style="background-color: #F3F7F1;">
+              <!-- search by units -->
+              <input list="units" type = "text" name = "units_search" placeholder="Units" class = "text-center rounded" style="background-color: #F3F7F1; max-width: 2cm;">
+              <datalist id="units">
+                <option value='0'>  
+                <option value='1'>   
+                <option value='2'>    
+                <option value='3'>
+                <option value='4'>    
+                <option value='5'>
+              </datalist>
+              <!-- search by components -->
+              <input list="component" type = "text" name = "component_search" placeholder="Component" class = "text-center rounded" style="background-color: #F3F7F1;">
+              <datalist id="component">
+                <option value="LEC">
+                <option value="LAB">
+                <option value="SEM"> 
+                <option value="PRA">
+                <option value="IND">             
+              </datalist>
+              <!-- search by course_status -->
+              <input list="status" type = "text" name = "status_search" placeholder="Course Status" class = "text-center rounded" style="background-color: #F3F7F1;">
+              <datalist id="status">
+                <option value="Open">
+                <option value="Wait list">
+                <option value="Closed">             
+              </datalist>          
               <button type = "submit" class = "btn btn-danger">SEARCH</button>
               <br>
             </p>

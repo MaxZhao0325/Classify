@@ -42,17 +42,14 @@ def index(request):
 
     # Get the list of departments
     dept_results = {}
-    response = requests.get('http://luthers-list.herokuapp.com/api/deptlist/')
-    data = response.json()
-    results = data
-    Dept.objects.all().delete()
-    for r in results:
-        result_info = Dept(subject = r['subject'])
-        result_info.save()
-        dept_results = Dept.objects.all()
+    # response = requests.get('http://luthers-list.herokuapp.com/api/deptlist/')
+    # data = response.json()
+    
+    dept_results = Dept.objects.all()
 
-    deptlist = Dept.objects.all().order_by('subject')
+    deptlist = dept_results.order_by('subject')
     query_results = {}
+    
     # deal with the condition when user trys to add a course to the shoppingcart
     # if the user clicks on star, then do not clear the Class database 
     if request.method == "POST" and request.POST.get("course_pk"):
@@ -65,29 +62,43 @@ def index(request):
         message_display = course.subject+course.catalog_number+"("+course.course_section+")"
         messages.success(request,(f'{message_display} has been added to your Favorited Classes.'))
         # after user just used the shoppingcart, fetch the last department viewed by the user
-        sq = request.session['sq']
-        num_sq = request.session['num_sq']
+        subject_sq = request.session['subject_sq']
+        cat_num_sq = request.session['cat_num_sq']
+        course_num_sq = request.session['course_num_sq']
+        units_sq = request.session['units_sq']
+        component_sq = request.session['component_sq']
+        status_sq = request.session['status_sq']
         
     else:
     # if not the case when the user trys to add a course to the shoppingcart, reload the page with new department database
 
         # first check if there is valid value for the search bar
-        sq = request.POST.get('dpt_search', None)
-        num_sq = request.POST.get('num_search', None)
-        if(sq or num_sq):
-            if(sq):
-                sq = str.upper(str(sq))
-            if(num_sq):
-                num_sq = str(num_sq)
+        subject_sq = request.POST.get('subject_search', None)
+        cat_num_sq = request.POST.get('cat_num_search', None)
+        course_num_sq = request.POST.get('course_num_search', None)
+        units_sq = request.POST.get('units_search', None)
+        component_sq = request.POST.get('component_search', None)
+        status_sq = request.POST.get('status_search', None)
+
+        if(subject_sq or component_sq or cat_num_sq or course_num_sq or status_sq):
+            if(subject_sq):
+                subject_sq = str.upper(subject_sq)
+            if(component_sq):
+                component_sq = str.upper(component_sq)
+            if(status_sq):
+                status_sq = str.upper(status_sq)
 
             #  check searching bar to see if it is a valid search
             # early error handling - these will prevent results from being returned if search is not valid
-            if sq and sq!='' and (len(sq) > 4 or 0 < len(sq) < 2):
+            if subject_sq and subject_sq!='' and (len(subject_sq) > 4 or 0 < len(subject_sq) < 2):
                 isSearchError = True
-                typeOfError = 'Your department code is invalid. Please enter a valid code (e.g. "APMA").'
-            elif num_sq and num_sq!='' and (not num_sq.isnumeric()):
+                typeOfError = 'Your subject code is invalid. Please enter a valid code (e.g. "APMA").'
+            elif cat_num_sq and cat_num_sq!='' and (not cat_num_sq.isnumeric()):
                 isSearchError = True
                 typeOfError = 'Your catalog number is invalid. Please enter a valid number (e.g. "3240").'
+            elif course_num_sq and course_num_sq!='' and (not course_num_sq.isnumeric()):
+                isSearchError = True
+                typeOfError = 'Your course number is invalid. Please enter a valid number (e.g. "12320").'
 
         # immediately returns some errors earlier, if there is no chance of a result being returned
         if isSearchError:
@@ -95,24 +106,23 @@ def index(request):
             return redirect('/classify')
 
         # first check if the user pushes the button of a dept name
-        if(not sq and not num_sq):
+        if(not subject_sq and not cat_num_sq and not course_num_sq and not units_sq and not component_sq and not status_sq):
             for dept in dept_results:
                 dept_string = dept.subject
-                if not sq:
-                    sq = request.POST.get(dept_string, None)
-            if(sq):
-                sq = str.upper(str(sq))
+                if not subject_sq:
+                    subject_sq = request.POST.get(dept_string, None)
+            if(subject_sq):
+                subject_sq = str.upper(str(subject_sq))
 
-        
 
         # if the subject searched is not searched before, then add course classes to the database
-        if 'stored_subject' not in request.session:
-            request.session['stored_subject']=[]
+        # if 'stored_subject' not in request.session:
+        #     request.session['stored_subject']=[]
 
         # if the department is first time viewed, add that department to the session and store the course data for that department
-        if sq is not None and sq != '' and sq not in request.session['stored_subject']:
-            request.session['stored_subject'].append(sq)
-        #     response = requests.get('http://luthers-list.herokuapp.com/api/dept/%s/' % sq)
+        # if subject_sq is not None and subject_sq != '' and subject_sq not in request.session['stored_subject']:
+        #     request.session['stored_subject'].append(subject_sq)
+        #     response = requests.get('http://luthers-list.herokuapp.com/api/dept/%s/' % subject_sq)
         #     data = response.json()
         #     results = data
 
@@ -179,27 +189,66 @@ def index(request):
         #     ).filter(records__gt=1):
         #     for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
         #         tag.delete()
-        # this session stores the department and the catalog_number of the last view so that the user will be back to the last page after add a course to shoppingcart
-        request.session['sq']=sq
-        request.session['num_sq']=num_sq
 
-    # if there is a valid search, return a specific results with subject and catalog to the user, else just return the subject
+
+        # this session stores all search informations of the last view so that the user will be back to the last page after add a course to shoppingcart
+        request.session['subject_sq']=subject_sq
+        request.session['cat_num_sq']=cat_num_sq
+        request.session['course_num_sq']=course_num_sq
+        request.session['units_sq']=units_sq
+        request.session['component_sq']=component_sq
+        request.session['status_sq']=status_sq
+
     
-    if(sq and num_sq):
-        query_results = Class.objects.filter(subject=sq, catalog_number=num_sq).order_by('id')
-        if(not query_results):
-            messages.error(request, 'No results found.')
-            return redirect('/classify')
-    elif(sq):
-        query_results = Class.objects.filter(subject=sq).order_by('id')
-        if(not query_results):
-            messages.error(request, 'No results found.')
-            return redirect('/classify')
-    elif(num_sq):
-        query_results = Class.objects.filter(catalog_number=num_sq).order_by('subject')
-        if(not query_results):
-            messages.error(request, 'No results found.')
-            return redirect('/classify')
+    if(subject_sq or cat_num_sq or course_num_sq or units_sq or component_sq or status_sq):
+        query_results = Class.objects
+        if(subject_sq):
+            query_results = query_results.filter(subject=subject_sq)
+            if(not query_results):
+                messages.error(request, 'No results found.')
+                return redirect('/classify')
+        if(cat_num_sq):
+            query_results = query_results.filter(catalog_number=cat_num_sq)
+            if(not query_results):
+                messages.error(request, 'No results found.')
+                return redirect('/classify')
+        if(course_num_sq):
+            query_results = query_results.filter(course_number=course_num_sq)
+            if(not query_results):
+                messages.error(request, 'No results found.')
+                return redirect('/classify')
+        if(units_sq):
+            query_results = query_results.filter(units=units_sq)
+            if(not query_results):
+                messages.error(request, 'No results found.')
+                return redirect('/classify')
+        if(component_sq):
+            query_results = query_results.filter(component=component_sq)
+            if(not query_results):
+                messages.error(request, 'No results found.')
+                return redirect('/classify')
+        if(status_sq):
+            query_results = query_results.filter(enrl_stat_descr=status_sq)
+            if(not query_results):
+                messages.error(request, 'No results found.')
+                return redirect('/classify')
+        query_results = query_results.order_by('id')
+
+    # if(subject_sq and cat_num_sq):
+    #     query_results = Class.objects.filter(subject=subject_sq, catalog_number=cat_num_sq).order_by('id')
+    #     if(not query_results):
+    #         messages.error(request, 'No results found.')
+    #         return redirect('/classify')
+    # elif(subject_sq):
+    #     query_results = Class.objects.filter(subject=subject_sq).order_by('id')
+    #     if(not query_results):
+    #         messages.error(request, 'No results found.')
+    #         return redirect('/classify')
+    # elif(cat_num_sq):
+    #     query_results = Class.objects.filter(catalog_number=cat_num_sq).order_by('subject')
+    #     if(not query_results):
+    #         messages.error(request, 'No results found.')
+    #         return redirect('/classify')
         
     return render(request, 'classify/index.html', {
         # map feature

@@ -6,6 +6,10 @@ from django.contrib import admin
 # Register your models here.
 from .models import Class, Dept, Profile, ProfileForm, Schedule, Friend_Request, Comment
 
+class DeptAdmin(admin.ModelAdmin):
+    list_display = ('subject',)
+admin.site.register(Dept, DeptAdmin)
+
 class ClassAdmin(admin.ModelAdmin):
     # fieldsets = [
     #     (None,               {'fields': ['subject']}),

@@ -89,7 +89,7 @@ def hacker():
                 enrollment_total = s['enrollment_total']
                 enrollment_available = s['enrollment_available']
                 enrollment_status = s['enrl_stat']
-                enrl_stat_descr = s['enrl_stat_descr']
+                enrl_stat_descr = str.upper(s['enrl_stat_descr'])
                 topic = s['topic']
                 
                 class_to_update = Class(
@@ -132,10 +132,15 @@ def hacker():
                                 recipient_list.append(profile.user.email)
                         send_mail(subject, message, EMAIL_HOST_USER, recipient_list, fail_silently = False)
 
-                    if ((class_in_database.enrollment_status=='W' or class_in_database.enrollment_status=='C') and (class_to_update.enrollment_status=='O')):
-                        subject='the course status changes'
-                        message=class_in_database.subject+class_in_database.catalog_number+'('+class_in_database.course_section+')'+' is open, you may want it.'
-                        send_mail(subject, message, EMAIL_HOST_USER, ['zhz990319@gmail.com'], fail_silently = False)
+                    # if ((class_in_database.enrollment_status=='W' or class_in_database.enrollment_status=='C') and (class_to_update.enrollment_status=='O')):
+                    #     subject='the course status changes'
+                    #     message=class_in_database.subject+class_in_database.catalog_number+'('+class_in_database.course_section+')'+' is open, you may want it.'
+                    #     send_mail(subject, message, EMAIL_HOST_USER, ['zhz990319@gmail.com'], fail_silently = False)
+
+                    # if (class_to_update.wait_list>0 and class_to_update.enrollment_status=='O'):
+                    #     subject='the course is open with wwaitlist'
+                    #     message=class_in_database.subject+class_in_database.catalog_number+'('+class_in_database.course_section+')'+' is open, and there are people on waitlist.'
+                    #     send_mail(subject, message, EMAIL_HOST_USER, ['zhz990319@gmail.com'], fail_silently = False)
 
                     # if they are the same, do not need to update the course info
                     # otherwise, update the course info

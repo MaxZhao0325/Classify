@@ -14,14 +14,14 @@ import django
 # A less-detailed version of a class, this is meant to be used when searching
 # This should speed up search requests.
 class Class(models.Model):
-    instructor_name = models.CharField(max_length=200, default="")
-    instructor_email = models.CharField(max_length=200, default="")
+    instructor_name = models.CharField(max_length=100, default="")
+    instructor_email = models.CharField(max_length=100, default="")
     course_number = models.IntegerField(default = 0)
     semester_code = models.IntegerField(default = 0)
-    course_section = models.CharField(max_length=200, default="")
+    course_section = models.CharField(max_length=10, default="")
     subject = models.CharField(max_length=10, default="")
-    catalog_number = models.CharField(max_length=200, default="")
-    description = models.CharField(max_length=5000, default="")
+    catalog_number = models.CharField(max_length=10, default="")
+    description = models.CharField(max_length=1000, default="")
     units = models.CharField(max_length=10, default="")
     component = models.CharField(max_length=10, default="")
     class_capacity = models.IntegerField(default = 0)
@@ -30,6 +30,7 @@ class Class(models.Model):
     enrollment_total = models.IntegerField(default = 0)
     enrollment_available = models.IntegerField(default = 0)
     enrollment_status = models.CharField(max_length=5, default="")
+    enrl_stat_descr = models.CharField(max_length=10, default="")
     topic = models.CharField(max_length=200, default="")
     meetings_days = models.CharField(max_length=15, default="")
     meetings_start_time = models.SlugField(max_length = 10, default="")

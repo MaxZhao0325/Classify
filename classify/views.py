@@ -110,8 +110,8 @@ def index(request):
             request.session['stored_subject']=[]
 
         # if the department is first time viewed, add that department to the session and store the course data for that department
-        # if sq is not None and sq != '' and sq not in request.session['stored_subject']:
-        #     request.session['stored_subject'].append(sq)
+        if sq is not None and sq != '' and sq not in request.session['stored_subject']:
+            request.session['stored_subject'].append(sq)
         #     response = requests.get('http://luthers-list.herokuapp.com/api/dept/%s/' % sq)
         #     data = response.json()
         #     results = data
@@ -179,9 +179,9 @@ def index(request):
         #     ).filter(records__gt=1):
         #     for tag in Class.objects.filter(course_number=duplicates["course_number"])[1:]:
         #         tag.delete()
-        # # this session stores the department and the catalog_number of the last view so that the user will be back to the last page after add a course to shoppingcart
-        # request.session['sq']=sq
-        # request.session['num_sq']=num_sq
+        # this session stores the department and the catalog_number of the last view so that the user will be back to the last page after add a course to shoppingcart
+        request.session['sq']=sq
+        request.session['num_sq']=num_sq
 
     # if there is a valid search, return a specific results with subject and catalog to the user, else just return the subject
     

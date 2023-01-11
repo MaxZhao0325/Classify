@@ -232,13 +232,13 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-# redirect http to https for safety
-SECURE_SSL_REDIRECT = True
+# # redirect http to https for safety
+# SECURE_SSL_REDIRECT = True
 
-# secure cookie based session
-SESSION_ENGINE='django.contrib.sessions.backends.signed_cookies'
-SESSION_COOKIE_SECURE = True
+# # secure cookie based session
+# SESSION_ENGINE='django.contrib.sessions.backends.signed_cookies'
+# SESSION_COOKIE_SECURE = True
 
-# enable HSTS
-SECURE_HSTS_SECONDS = 30
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# # enable HSTS
+# SECURE_HSTS_SECONDS = 30
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True

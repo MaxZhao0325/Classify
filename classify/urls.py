@@ -14,5 +14,5 @@ urlpatterns = [
     path('accept_friend_request/<int:requestID>/',views.accept_friend_request, name='accept_friend_request'),
     path('decline_friend_request/<int:requestID>/',views.decline_friend_request, name='decline_friend_request'),
     # for google console authentication
-    path('googlef8e431e468b388bf', views.google_console, name='google_console_auth'),
+    path('googlef8e431e468b388bf.html', views.google_console, name='google_console_auth'),
 ]

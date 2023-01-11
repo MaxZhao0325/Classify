@@ -231,3 +231,6 @@ EMAIL_HOST_PASSWORD = "jlfgbzkblukmdbrt"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+# redirect http to https for safety
+SECURE_SSL_REDIRECT = True

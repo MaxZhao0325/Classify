@@ -237,3 +237,5 @@ SECURE_SSL_REDIRECT = True
 
 # secure cookie based session
 SESSION_ENGINE='django.contrib.sessions.backends.signed_cookies'
+SECURE_HSTS_SECONDS = 30
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True

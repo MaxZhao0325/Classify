@@ -684,3 +684,7 @@ def friends(request):
             return render(request, 'classify/friends.html', {'user':request.user, 'friend_request': Friend_Request.objects.filter(to_user=request.user)})
     else:
         return redirect("/accounts/google/login/")
+
+# for google console authentication
+def google_console(request):
+    return render(request, 'classify/googlef8e431e468b388bf.html')

@@ -208,35 +208,35 @@ def index(request):
             query_results = query_results.filter(subject=subject_sq)
             if(not query_results):
                 messages.error(request, 'No results found.')
-                return redirect('/classify')
+                return redirect('/')
         if(cat_num_sq):
             query_results = query_results.filter(catalog_number=cat_num_sq)
             if(not query_results):
                 messages.error(request, 'No results found.')
-                return redirect('/classify')
+                return redirect('/')
         if(course_num_sq):
             query_results = query_results.filter(course_number=course_num_sq)
             if(not query_results):
                 messages.error(request, 'No results found.')
-                return redirect('/classify')
+                return redirect('/')
         if(units_sq):
             query_results = query_results.filter(units=units_sq)
             if(not query_results):
                 messages.error(request, 'No results found.')
-                return redirect('/classify')
+                return redirect('/')
         if(component_sq):
             query_results = query_results.filter(component=component_sq)
             if(not query_results):
                 messages.error(request, 'No results found.')
-                return redirect('/classify')
+                return redirect('/')
         if(status_sq):
             query_results = query_results.filter(enrl_stat_descr=status_sq)
             if(not query_results):
                 messages.error(request, 'No results found.')
-                return redirect('/classify')
+                return redirect('/')
         query_results = query_results.order_by('id')
 
-        # classify the classes into dept + catalog number (cs3240)
+        # classify the classes into dept + catalog number (cs3240) so that the index page can display as such
         for course in query_results:
             subject = course.subject
             catalog = course.catalog_number
@@ -261,7 +261,7 @@ def index(request):
         
     return render(request, 'classify/index.html', {
         # map feature
-        "google_api_key": settings.GOOGLE_API_KEY,
+        #"google_api_key": settings.GOOGLE_API_KEY,
         "query_results": query_results,
         "query_results_classified": query_results_classified,
         'deptlist': deptlist,
@@ -454,88 +454,88 @@ def schedule(request):
 # implement a map feature where the user can check the position of a course on google map.
 # Handles directions from Google by implementing googleapis jason map data
 
-def Directions(*args, **kwargs):
+# def Directions(*args, **kwargs):
 
-    current_position = kwargs.get("current_position")
-    target_position = kwargs.get("target_position")
+#     current_position = kwargs.get("current_position")
+#     target_position = kwargs.get("target_position")
 
-    find_current_position_id = requests.get(
-        'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?',
-        params={
-            'input': current_position,
-            'inputtype' : 'textquery',
-            "key": settings.GOOGLE_API_KEY
-        })
-    if find_current_position_id.json()["status"] == "OK":
-        current_position_id = find_current_position_id.json()["candidates"][0]["place_id"]
+#     find_current_position_id = requests.get(
+#         'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?',
+#         params={
+#             'input': current_position,
+#             'inputtype' : 'textquery',
+#             "key": settings.GOOGLE_API_KEY
+#         })
+#     if find_current_position_id.json()["status"] == "OK":
+#         current_position_id = find_current_position_id.json()["candidates"][0]["place_id"]
 
-    find_target_position_id = requests.get(
-        'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?',
-        params={
-            'input': target_position,
-            'inputtype' : 'textquery',
-            "key": settings.GOOGLE_API_KEY
-        })
-    if find_target_position_id.json()["status"] == "OK":
-        target_position_id = find_target_position_id.json()["candidates"][0]["place_id"]
+#     find_target_position_id = requests.get(
+#         'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?',
+#         params={
+#             'input': target_position,
+#             'inputtype' : 'textquery',
+#             "key": settings.GOOGLE_API_KEY
+#         })
+#     if find_target_position_id.json()["status"] == "OK":
+#         target_position_id = find_target_position_id.json()["candidates"][0]["place_id"]
 
-    result = requests.get(
-        'https://maps.googleapis.com/maps/api/directions/json?',
-         params={
-         'origin': 'place_id:'+current_position_id,
-         'destination': 'place_id:'+target_position_id,
-         'mode' : 'walking',
-         "key": settings.GOOGLE_API_KEY
-         })
+#     result = requests.get(
+#         'https://maps.googleapis.com/maps/api/directions/json?',
+#          params={
+#          'origin': 'place_id:'+current_position_id,
+#          'destination': 'place_id:'+target_position_id,
+#          'mode' : 'walking',
+#          "key": settings.GOOGLE_API_KEY
+#          })
 
-    directions = result.json()
+#     directions = result.json()
 
-    if directions["status"] == "OK":
+#     if directions["status"] == "OK":
 
-        route = directions["routes"][0]["legs"][0]
-        origin = current_position
-        destination = target_position
-        distance = route["distance"]["text"]
-        duration = route["duration"]["text"]
+#         route = directions["routes"][0]["legs"][0]
+#         origin = current_position
+#         destination = target_position
+#         distance = route["distance"]["text"]
+#         duration = route["duration"]["text"]
 
-        # steps = [
-        #     [
-        #         s["distance"]["text"],
-        #         s["duration"]["text"],
-        #         s["html_instructions"],
+#         # steps = [
+#         #     [
+#         #         s["distance"]["text"],
+#         #         s["duration"]["text"],
+#         #         s["html_instructions"],
 
-        #     ]
-        #     for s in route["steps"]]
+#         #     ]
+#         #     for s in route["steps"]]
 
-    return {
-        "origin": origin,
-        "destination": destination,
-        "distance": distance,
-        "duration": duration,
-        # "steps": steps
-        }
+#     return {
+#         "origin": origin,
+#         "destination": destination,
+#         "distance": distance,
+#         "duration": duration,
+#         # "steps": steps
+#         }
 
-# define the map
-def map(request):
-    if(request.GET.get("current_position")):
-        current_position = request.GET.get("current_position")
-        target_position = request.GET.get("target_position")
-        directions = Directions(
-            current_position= current_position,
-            target_position=target_position,
-            )
+# # define the map
+# def map(request):
+#     if(request.GET.get("current_position")):
+#         current_position = request.GET.get("current_position")
+#         target_position = request.GET.get("target_position")
+#         directions = Directions(
+#             current_position= current_position,
+#             target_position=target_position,
+#             )
 
-        context = {
-        "google_api_key": settings.GOOGLE_API_KEY,
-        "origin": current_position,
-        "destination": target_position,
-        "directions": directions,
+#         context = {
+#         "google_api_key": settings.GOOGLE_API_KEY,
+#         "origin": current_position,
+#         "destination": target_position,
+#         "directions": directions,
 
-        }
-        return render(request, 'classify/map.html', context)   
+#         }
+#         return render(request, 'classify/map.html', context)   
     
-    messages.warning(request, "You must choose a course to show its location.")
-    return redirect ("/classify")  
+#     messages.warning(request, "You must choose a course to show its location.")
+#     return redirect ("/classify")  
 
 # define the user friend request
 def send_friend_request(request, userID):
@@ -543,13 +543,13 @@ def send_friend_request(request, userID):
     to_user = User.objects.get(id=userID)
     if(to_user in from_user.profile.friends.all()):
         messages.error(request, 'You are already friends.')
-        return redirect('/classify/user/friend_search')
+        return redirect('/user/friend_search')
     friend_request, created = Friend_Request.objects.get_or_create(from_user=from_user, to_user=to_user)
     if created:
         messages.success(request, f'A friend request to {to_user} has been sent.')
     else:
         messages.warning(request, f'A friend request to {to_user} has already been sent.')
-    return redirect('/classify/user/friend_search')
+    return redirect('/user/friend_search')
 
 # accept the user friend request
 def accept_friend_request(request, requestID):
@@ -563,8 +563,8 @@ def accept_friend_request(request, requestID):
         messages.success(request, f'Friend request accepted.')
     else:
         friend_request.delete()
-        messages.error(request, f'You guys are already friends!')
-    return redirect('/classify/user/friends')
+        messages.error(request, f'You are already friends!')
+    return redirect('/user/friends')
 
 # decline the user friend request
 def decline_friend_request(request, requestID):
@@ -572,7 +572,7 @@ def decline_friend_request(request, requestID):
     # simply delete the friend request
     friend_request.delete()
     messages.success(request, f'Friend request declined.')
-    return redirect('/classify/user/friends')
+    return redirect('/user/friends')
     
 # open friend search page
 def friend_search(request):
@@ -597,7 +597,7 @@ def friends(request):
             # delete the user from his/her friends' side
             FriendToDelete.profile.friends.remove(request.user)
             messages.success(request, (f'You have removed {FriendToDelete} from your Friends list.'))
-            return redirect('/classify/user/friends')
+            return redirect('/user/friends')
 
         # process if the user check the schedule of a friend or the user comments
         if request.method == 'POST' and (request.POST.get('check_friend_schedule') or request.POST.get('friend_id')):

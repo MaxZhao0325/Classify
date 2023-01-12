@@ -5,7 +5,7 @@ from . import views
 app_name = 'classify'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('map', views.map, name='map'),
+    # path('map', views.map, name='map'),
     path('user', views.user, name='user'),
     path('user/schedule', views.schedule, name='schedule'),
     path('user/friends', views.friends, name='friends'),

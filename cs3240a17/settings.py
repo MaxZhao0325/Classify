@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-rpn@qrk9#y+fwqdfsrk30lm)et)*8d@s#(vq8so))fhc6fc$w!"
+SECRET_KEY = "$*=!%m=lwzx_(+#zu4*v-gfu8fs8bc!u01)_87390tk5-f1c5e"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -36,7 +36,6 @@ ALLOWED_HOSTS = ['classify.herokuapp.com', '127.0.0.1', 'localhost']
 INSTALLED_APPS = [
     "classify",
     'bootstrap5',
-    'whitenoise',
     'django.contrib.sites',
     "django.contrib.admin",
     "django.contrib.auth",
@@ -53,7 +52,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -172,8 +170,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 6 #5 if using localhost, 6 if using Heroku
-LOGIN_REDIRECT_URL = '/classify'
-LOGOUT_REDIRECT_URL = '/classify'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Additional configuration settings
 SOCIALACCOUNT_QUERY_EMAIL = True
@@ -238,7 +236,8 @@ SECURE_SSL_REDIRECT = True
 # secure cookie based session
 SESSION_ENGINE='django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE=True
 
 # enable HSTS
-SECURE_HSTS_SECONDS = 30
+SECURE_HSTS_SECONDS = 60
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True

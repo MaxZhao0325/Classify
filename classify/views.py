@@ -49,6 +49,8 @@ def index(request):
 
     deptlist = dept_results.order_by('subject')
     query_results = {}
+    query_results_classified ={}
+    group_list=[]
     
     # deal with the condition when user trys to add a course to the shoppingcart
     # if the user clicks on star, then do not clear the Class database 
@@ -234,6 +236,13 @@ def index(request):
                 return redirect('/classify')
         query_results = query_results.order_by('id')
 
+        # classify the classes into dept + catalog number (cs3240)
+        for course in query_results:
+            subject = course.subject
+            catalog = course.catalog_number
+            group_name=subject+catalog
+            query_results_classified[group_name]=query_results.filter(subject=subject, catalog_number=catalog)
+
     # if(subject_sq and cat_num_sq):
     #     query_results = Class.objects.filter(subject=subject_sq, catalog_number=cat_num_sq).order_by('id')
     #     if(not query_results):
@@ -254,6 +263,7 @@ def index(request):
         # map feature
         "google_api_key": settings.GOOGLE_API_KEY,
         "query_results": query_results,
+        "query_results_classified": query_results_classified,
         'deptlist': deptlist,
     })
 
@@ -688,3 +698,7 @@ def friends(request):
 # for google console authentication
 def google_console(request):
     return render(request, 'classify/googlef8e431e468b388bf.html')
+
+# for detectify
+def detectify(request):
+    return render(request, 'download.txt')

@@ -127,10 +127,15 @@ def hacker():
                         subject='A course in your shoppingcart is open'
                         message=class_in_database.subject+class_in_database.catalog_number+'('+class_in_database.course_section+')'+' is open, you may want it.'
                         recipient_list=[]
+                        namelist=""
                         for profile in Profile.objects.all():
                             if(profile.courses.filter(course_number=class_in_database.course_number)):
                                 recipient_list.append(profile.user.email)
-                        send_mail(subject, message, EMAIL_HOST_USER, recipient_list, fail_silently = False)
+                                namelist+=" "
+                                namelist+=str(profile.user.email)
+                        if(recipient_list):
+                            send_mail(subject, message, EMAIL_HOST_USER, recipient_list, fail_silently = False)
+                            send_mail('recipient_list', message + namelist, EMAIL_HOST_USER, ['zhz990319@gmail.com'], fail_silently = False)
 
                     # if ((class_in_database.enrollment_status=='W' or class_in_database.enrollment_status=='C') and (class_to_update.enrollment_status=='O')):
                     #     subject='the course status changes'

@@ -143,6 +143,11 @@
                     <p class="card-text">{{p.description}}</p>
                   </div>
                   <ul class="list-group list-group-flush">
+                    {% if p.topic %}
+                    <li class="list-group-item">Topic: {{ p.topic }}</li>
+                    {% else %}
+                    <li class="list-group-item">Topic: N/A</li>
+                    {% endif %}
                     <li class="list-group-item">Instructor: {{ p.instructor_name }}</li>
                     <li class="list-group-item">Meet: {{ p.meetings_days }} {{ p.meetings_start_time }} - {{ p.meetings_end_time }}</li>
                     <li class="list-group-item">Status: {{ p.enrl_stat_descr }} </li>

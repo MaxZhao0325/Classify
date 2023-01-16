@@ -702,3 +702,7 @@ def google_console(request):
 # for detectify
 def detectify(request):
     return render(request, 'download.txt')
+
+# for wechat authentication
+def wechat(request):
+    return render(request, '8426e94a3d6b088bc899896481600a84.txt')

@@ -15,5 +15,7 @@ urlpatterns = [
     path('decline_friend_request/<int:requestID>/',views.decline_friend_request, name='decline_friend_request'),
     # for google console authentication
     path('googlef8e431e468b388bf.html', views.google_console, name='google_console_auth'),
-    path('9e070c8784435c3d9b4b850d6a1e4d67.txt', views.detectify, name='detectify')
+    path('9e070c8784435c3d9b4b850d6a1e4d67.txt', views.detectify, name='detectify'),
+    # for wechat host authe
+    path('8426e94a3d6b088bc899896481600a84.txt', views.wechat, name='wechat')
 ]

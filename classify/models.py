@@ -49,9 +49,11 @@ class Dept(models.Model):
 # so a profile just represents for a user
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    courses = models.ManyToManyField(Class)
+    courses = models.ManyToManyField(Class, related_name="favorite_courses")
     # add a friend attribute to profile
     friends = models.ManyToManyField(User, related_name='friends')
+    # need a folder to store which courses are muted by this user
+    muted_course = models.ManyToManyField(Class, related_name="muted_courses")
 
     @receiver(post_save, sender=User)
     def create_user_profile(sender, instance, created, **kwargs):

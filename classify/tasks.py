@@ -20,7 +20,7 @@ logger = get_task_logger(__name__)
 @shared_task
 def hacker():
 
-    class_list=[]
+    #class_list=[]
 
     # subject_list=['AAS','ACCT','AIRS','ALAR','AMST','ANTH','APMA','ARAB','ARAD','ARAH','ARCH','ARCY','ARH','ARTH','ARTR','ARTS','ASL','ASTR',
     # 'BIMS',''
@@ -130,7 +130,8 @@ def hacker():
                         recipient_list=[]
                         namelist=""
                         for profile in Profile.objects.all():
-                            if(profile.courses.filter(course_number=class_in_database.course_number)):
+                            # if the updated course is in user's favorite but not muted, send their message
+                            if((profile.courses.filter(course_number=class_in_database.course_number)) and (class_in_database not in profile.muted_course.all())):
                                 recipient_list.append(profile.user.email)
                                 namelist+=" "
                                 namelist+=str(profile.user.email)
@@ -189,13 +190,17 @@ def hacker():
             r = requests.get(url_search)
             data = r.json()
     print(count)
+
     #return save_function(class_list)
 
     # for p in Profile.objects.all():
     #     print(p.user.first_name)
     #     for c in p.courses.all():
     #         print(c.subject+c.catalog_number+c.course_section)
-    #     print()
+    #     print(p.user.first_name)
+    #     for d in p.muted_course.all():
+    #         print(d.subject+d.catalog_number+d.course_section)
+    #     print("end")
 
 # from celery.schedules import crontab # scheduler
 # # scheduled task execution

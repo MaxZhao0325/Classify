@@ -267,6 +267,7 @@ def index(request):
         'deptlist': deptlist,
     })
 
+
 def user(request):
     if (request.user.is_authenticated):
         schedule = ScheduleForm(instance=request.user.profile.schedule)
@@ -309,8 +310,12 @@ def user(request):
                             break
             if not conflict:
                 messages.success(request, (f'{CourseToAdd.subject}{CourseToAdd.catalog_number} added to your schedule'))
-                request.user.profile.schedule.courses.add(CourseToAdd)        
-        return render(request, 'classify/user.html', {"user":request.user, "profile":profile, "schedule":schedule, "conflict":conflict})
+                request.user.profile.schedule.courses.add(CourseToAdd)
+        class_list = request.user.profile.courses.order_by("subject", "catalog_number", "course_section")
+
+        # get the list of muted classes for the user
+        muted_course = request.user.profile.muted_course.all()
+        return render(request, 'classify/user.html', {"user":request.user, "profile":profile, "schedule":schedule, "conflict":conflict, "class_list": class_list, "muted_course": muted_course})
     else:
         return redirect("/accounts/google/login/")
 
@@ -573,6 +578,24 @@ def decline_friend_request(request, requestID):
     friend_request.delete()
     messages.success(request, f'Friend request declined.')
     return redirect('/user/friends')
+
+# mute notification of a certain class
+def mute_notification(request, userID, course_number):
+    user = User.objects.get(id=userID)
+    class_to_mute = Class.objects.get(course_number=course_number)
+    if(class_to_mute not in user.profile.muted_course.all()):
+        user.profile.muted_course.add(class_to_mute)
+    messages.success(request, f'You have muted {class_to_mute.subject} {class_to_mute.catalog_number}-{class_to_mute.course_section}.')
+    return redirect('/user')
+
+# unmute notification of a certain class
+def unmute_notification(request, userID, course_number):
+    user = User.objects.get(id=userID)
+    class_to_unmute = Class.objects.get(course_number=course_number)
+    if(class_to_unmute in user.profile.muted_course.all()):
+        user.profile.muted_course.remove(class_to_unmute)
+    messages.success(request, f'You have unmuted {class_to_unmute.subject} {class_to_unmute.catalog_number}-{class_to_unmute.course_section}.')
+    return redirect('/user')
     
 # open friend search page
 def friend_search(request):

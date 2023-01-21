@@ -27,6 +27,37 @@
       .dropdown-menu {
         width: max-content;
       }
+      .accordion_button_add {
+        height: 40px;
+        width: 80%;
+	      cursor: pointer;
+	      text-align: center;
+	      border: 1px solid black;
+	      outline: none;
+        background:transparent;
+      }
+      .accordion_button_add:hover{
+        background: grey;
+      }
+      .accordion_button_delete {
+        height: 40px;
+        width: 80%;
+	      cursor: pointer;
+	      text-align: center;
+	      border: 1px solid black;
+	      outline: none;
+        background:grey;
+    
+      }
+      .accordion_button_delete:hover{
+        background:red;
+      }
+      .side-bar {
+        position:absolute;
+        width: 15%;
+        height: 70%;
+        overflow-y: scroll;
+}
    </style>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
@@ -115,14 +146,43 @@
           You can add classes from the <a href="/user" class="alert-link">Favorites</a> tab and view your friends' schedules from the <a href="/user/friends" class="alert-link">My Friends</a> tab.
         </div>
         <div class="alert alert-primary" role="alert" >
-          You can check the detail of your classes info by clicking on the schedule. Classes without meeting time will be set on Saturday.
+          You can also add or remove classes by using the side bar below. Classes with grey background is currently in your schedule.
+        </div>
+        <div class="alert alert-primary" role="alert" >
+          You can check the detail of your classes info by clicking on the schedule. Classes without meeting time will be set on Saturday in default.
         </div>
         <hr class="rounded">
       </div>
 
       <!-- Weekdays -->
       <div class="container">
-        <div id="dp"></div>
+        <div class="row">
+          <div class="column" style="width:20%">
+            <h3>Favorite classes</h3>
+            <div class="side-bar">
+            <form method="post">
+            {% csrf_token %}
+            {% for course in favorite_courses %}
+            {% if course in schedule_courses %}
+            <button class="accordion_button_delete" type="submit" name="delete_from_schedule" value="{{course.course_number}}" onclick="return confirm('You will remove it from your schedule, are you sure to do that?')"> <b>{{course.subject}}{{course.catalog_number}}-{{course.course_section}}({{course.component}})</b>
+            </button>
+            <br>
+            {% else %}
+            <button class="accordion_button_add" type="submit" name="add_to_schedule" value="{{course.course_number}}"> <b>{{course.subject}}{{course.catalog_number}}-{{course.course_section}}({{course.component}})</b>
+            </button>
+            <br>
+            {% endif %}
+            {% endfor %}
+            </form>
+            </div>
+          </div>
+          <div class="column" style="width:80%">
+            <br>
+            <br>
+            <br>
+            <div id="dp"></div>
+          </div>
+        </div>
       </div>
 
       <br>
@@ -234,16 +294,16 @@ dp.init();
 
 <script>
   const events = [];
+  var color=["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "purple", "red", "silver", "teal", "white", "yellow"]
   var count = 0;
   var count2= 0;
 </script>
 
 <!-- monday course -->
-{% for course in courses %}
+{% for course in schedule_courses %}
 {% if course.meetings_start_time %}
 
 <script>
-var color=["aqua", "black", "blue", "fuchsia", "gray", "green", "lime", "maroon", "navy", "olive", "purple", "red", "silver", "teal", "white", "yellow"]
 var meeting_days = "{{course.meetings_days}}";
 
 while(meeting_days.length>0){
@@ -352,9 +412,9 @@ count+=1;
     start: "2022-03-26T12.00.00",
     end: "2022-03-26T13.00.00",
     id: count,
-    text: "{{course.subject}}"+"{{course.catalog_number}}"+"({{course.course_section}})",
+    text: "{{course.subject}}"+"{{course.catalog_number}}"+"-{{course.course_section}}"+"({{course.component}})",
     barColor: color[count],
-    professor: "{{course.instructor_name}}",
+    professor: "{{course.instructor_name}}"+" ({{course.instructor_email}})",
     meeting: "{{course.meetings_days}} {{course.meetings_start_time}} - {{course.meetings_end_time}}",
     location: "{{course.facility_description}}",
     status: "{{course.enrl_stat_descr}}",
@@ -368,9 +428,9 @@ count+=1;
     start: "2022-03-26T13.00.00",
     end: "2022-03-26T14.00.00",
     id: count,
-    text: "{{course.subject}}"+"{{course.catalog_number}}"+"({{course.course_section}})",
+    text: "{{course.subject}}"+"{{course.catalog_number}}"+"-{{course.course_section}}"+"({{course.component}})",
     barColor: color[count],
-    professor: "{{course.instructor_name}}",
+    professor: "{{course.instructor_name}}"+" ({{course.instructor_email}})",
     meeting: "{{course.meetings_days}} {{course.meetings_start_time}} - {{course.meetings_end_time}}",
     location: "{{course.facility_description}}",
     status: "{{course.enrl_stat_descr}}",
@@ -384,9 +444,9 @@ count+=1;
     start: "2022-03-26T14.00.00",
     end: "2022-03-26T15.00.00",
     id: count,
-    text: "{{course.subject}}"+"{{course.catalog_number}}"+"({{course.course_section}})",
+    text: "{{course.subject}}"+"{{course.catalog_number}}"+"-{{course.course_section}}"+"({{course.component}})",
     barColor: color[count],
-    professor: "{{course.instructor_name}}",
+    professor: "{{course.instructor_name}}"+" ({{course.instructor_email}})",
     meeting: "{{course.meetings_days}} {{course.meetings_start_time}} - {{course.meetings_end_time}}",
     location: "{{course.facility_description}}",
     status: "{{course.enrl_stat_descr}}",

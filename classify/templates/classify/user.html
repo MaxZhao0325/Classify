@@ -154,7 +154,7 @@
         <hr class="rounded">
       </div>
 
-      <div class="container">
+      <div >
         <!-- <form method="post"> -->
           <!-- <div class="row">
             {% for p in user.profile.courses.all %}
@@ -187,25 +187,25 @@
         <!-- </form> -->
 
           <div class="accordion" id="accordionTemplate" style="margin: 0; height: 100%;">
-          <div class="row">
+          
             {% for p in class_list %}
-            <div class="column" style="width:100%">
+          
             <button class="accordion_button"> <b>{{p.subject}} {{p.catalog_number}}-{{p.course_section}} ({{ p.component }}) &emsp;&emsp;  {{p.description}}</b> </button>
             <div class="panel">        
               <div class="row">                
                 <div class="column" style="padding:12px; border-bottom:solid; border-bottom-color: greenyellow; float:left; width:30%; ">                        
+                  <p class="list-inline"><b>Course Number:</b>&nbsp;{{p.course_number}} </p>                    
                   <p class="list-inline"><b>Section:</b>&nbsp;{{p.course_section}} </p> 
                   <p class="list-inline"><b>Component:</b>&nbsp;{{p.component}} </p>
-                  <p class="list-inline"><b>Instructor:</b>&nbsp;{{p.instructor_name}} </p>
-                  <p class="list-inline"><b>Meet:</b>&nbsp;{{p.meetings_days}} {{p.meetings_start_time}} - {{p.meetings_end_time}}</p>    
-                  <p class="list-inline"><b>Topic:</b>&nbsp;{{p.topic}} </p>                  
+                  <p class="list-inline"><b>Instructor:</b>&nbsp;{{p.instructor_name}} ({{p.instructor_email}})</p>
+                  <p class="list-inline"><b>Meet:</b>&nbsp;{{p.meetings_days}} {{p.meetings_start_time}} - {{p.meetings_end_time}} ({{p.facility_description}})</p>                                  
                 </div>  
                 <div class="column" style="padding:12px; border-bottom:solid; border-bottom-color: greenyellow; float:left; width:40%; ">
                   <p class="list-inline"><b>Units:</b>&nbsp;{{p.units}} </p>
                   <p class="list-inline"><b>Status:</b>&nbsp;{{p.enrl_stat_descr}} </p>               
-                  <p class="list-inline"><b>Seats Available:</b>&nbsp;{{p.enrollment_available}} </p>
-                  <p class="list-inline"><b>On Waitlist:</b>&nbsp;{{p.wait_list}}</p>
-                  <p class="list-inline"><b>Location:</b>&nbsp;{{p.facility_description}} </p>               
+                  <p class="list-inline"><b>Seats Available:</b>&nbsp;{{p.enrollment_available}}/{{p.class_capacity}} </p>
+                  <p class="list-inline"><b>On Waitlist:</b>&nbsp;{{p.wait_list}}/{{p.wait_cap}}</p>
+                  <p class="list-inline"><b>Topic:</b>&nbsp;{{p.topic}} </p>              
                 </div>
                 <div class="column" style="padding:12px; border-bottom:solid; border-bottom-color: greenyellow; float:left; width:30%; ">
                   <p class="list-inline"><form method="post">
@@ -221,9 +221,9 @@
                 </div>
               </div>    
             </div>
-            </div>
+            
             {% endfor %}
-        </div>
+        
         </div>
 
 

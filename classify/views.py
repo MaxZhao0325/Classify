@@ -375,13 +375,38 @@ def get_time_float_start(course):
 # show the schedule of the current user
 def schedule(request):
     if (request.user.is_authenticated):
-        # if the user tries to delete a course from the schedule, fetch the course by its course_number and delete it from user's schedule.
-        if request.method == 'POST' and request.POST.get('delete_course'):
-            CourseNumToDelete = request.POST.get('delete_course')
+        # if the user tries to delete a course from the schedule, access below
+        if request.method == 'POST' and request.POST.get('delete_from_schedule'):
+            CourseNumToDelete = request.POST.get('delete_from_schedule')
             CourseToDelete = request.user.profile.schedule.courses.all().get(course_number=CourseNumToDelete)
             # using remove for manytomany relationship can remove the object from somewhere without deleting itself
             request.user.profile.schedule.courses.remove(CourseToDelete)
             messages.success(request, (f'{CourseToDelete.subject}{CourseToDelete.catalog_number} has been deleted from your Schedule.'))
+            return redirect('/user/schedule')
+
+        # if the user tries to add a course from the schedule, access below
+        if request.method == 'POST' and request.POST.get('add_to_schedule'):
+            CourseNumToAdd = request.POST.get('add_to_schedule')
+            CourseToAdd = request.user.profile.courses.all().get(course_number=CourseNumToAdd)
+            conflict=False
+            # if a course in the schedule conflicts with this one, it cannot be added
+            # if this course already exists in the schedule at a different time, it cannot be added (i.e. cannot enroll in two sections)
+            for course in request.user.profile.schedule.courses.all():
+                # no same course
+                if((CourseToAdd.subject == course.subject) and (CourseToAdd.catalog_number == course.catalog_number) and (CourseToAdd.component == course.component)):
+                    messages.error(request, (f'{CourseToAdd.subject}{CourseToAdd.catalog_number} is already in your Schedule.'))
+                    conflict = True
+                    break
+                # no same time
+                else:
+                    if((CourseToAdd.meetings_days != "-") and (course.meetings_days != "-")):
+                        conflict = conflict_check(CourseToAdd, course)
+                        if(conflict):
+                            messages.error(request, (f'{CourseToAdd.subject}{CourseToAdd.catalog_number} has a time conflict with {course.subject}{course.catalog_number} in your Schedule.'))
+                            break
+            if not conflict:
+                messages.success(request, (f'{CourseToAdd.subject}{CourseToAdd.catalog_number} added to your schedule'))
+                request.user.profile.schedule.courses.add(CourseToAdd)
             return redirect('/user/schedule')
         
         # Put the courses into the correct days, so that the html file can access them
@@ -452,9 +477,9 @@ def schedule(request):
                 schedule.voted_users.add(request.user)
             schedule.save()
         
-        courses = request.user.profile.schedule.courses.all()
-
-        return render(request, 'classify/schedule.html', {"courses":courses, "user":request.user, "schedule": request.user.profile.schedule, 'comments':comments, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
+        schedule_courses = request.user.profile.schedule.courses.all().order_by("subject","catalog_number","course_section")
+        favorite_courses = request.user.profile.courses.all().order_by("subject","catalog_number","course_section")
+        return render(request, 'classify/schedule.html', {"favorite_courses":favorite_courses, "schedule_courses":schedule_courses, "user":request.user, "schedule": request.user.profile.schedule, 'comments':comments, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
     else:
         return redirect("/accounts/google/login/")
 
@@ -714,7 +739,7 @@ def friends(request):
             wednesday_courses.sort(key=get_time_float_start)
             thursday_courses.sort(key=get_time_float_start)
             friday_courses.sort(key=get_time_float_start)
-            courses = friend.profile.schedule.courses.all()
+            courses = friend.profile.schedule.courses.all().order_by("subject","catalog_number","course_section")
             return render(request, 'classify/friends.html', {'courses':courses, 'user':request.user, 'friend':friend, 'comments':comments, 'friend_request': Friend_Request.objects.filter(to_user=request.user), 'friend_schedule':friend_schedule, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
         else:
             return render(request, 'classify/friends.html', {'user':request.user, 'friend_request': Friend_Request.objects.filter(to_user=request.user)})

@@ -451,8 +451,10 @@ def schedule(request):
             if request.user not in schedule.voted_users.all():
                 schedule.voted_users.add(request.user)
             schedule.save()
+        
+        courses = request.user.profile.schedule.courses.all()
 
-        return render(request, 'classify/schedule.html', {"user":request.user, "schedule": request.user.profile.schedule, 'comments':comments, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
+        return render(request, 'classify/schedule.html', {"courses":courses, "user":request.user, "schedule": request.user.profile.schedule, 'comments':comments, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
     else:
         return redirect("/accounts/google/login/")
 
@@ -712,7 +714,8 @@ def friends(request):
             wednesday_courses.sort(key=get_time_float_start)
             thursday_courses.sort(key=get_time_float_start)
             friday_courses.sort(key=get_time_float_start)
-            return render(request, 'classify/friends.html', {'user':request.user, 'friend':friend, 'comments':comments, 'friend_request': Friend_Request.objects.filter(to_user=request.user), 'friend_schedule':friend_schedule, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
+            courses = friend.profile.schedule.courses.all()
+            return render(request, 'classify/friends.html', {'courses':courses, 'user':request.user, 'friend':friend, 'comments':comments, 'friend_request': Friend_Request.objects.filter(to_user=request.user), 'friend_schedule':friend_schedule, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
         else:
             return render(request, 'classify/friends.html', {'user':request.user, 'friend_request': Friend_Request.objects.filter(to_user=request.user)})
     else:

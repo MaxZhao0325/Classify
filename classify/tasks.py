@@ -194,13 +194,16 @@ def hacker():
     #return save_function(class_list)
 
     # for p in Profile.objects.all():
-    #     print(p.user.first_name)
+    #     print(p.user.first_name+" favorite")
     #     for c in p.courses.all():
     #         print(c.subject+c.catalog_number+c.course_section)
-    #     print(p.user.first_name)
+    #     print(p.user.first_name+" mute")
     #     for d in p.muted_course.all():
     #         print(d.subject+d.catalog_number+d.course_section)
-    #     print("end")
+    #     print(p.user.first_name+" schedule")
+    #     for d in p.schedule.courses.all():
+    #         print(d.subject+d.catalog_number+d.course_section)
+    #     print("end for " +p.user.first_name )
 
 # from celery.schedules import crontab # scheduler
 # # scheduled task execution

@@ -214,7 +214,7 @@ if("undefined"==typeof DayPilot)var DayPilot={};!function(){function e(e){var t=
             return;
         }
 
-        dp.events.update(modal.result);
+        // dp.events.update(modal.result);
 
     },
     onBeforeEventRender: args => {
@@ -304,7 +304,7 @@ while(meeting_days.length>0){
   if(ori_end_time.length<4 || ori_end_time==""){
 
   }
-  else if(ori_end_time.includes("pm")){
+  else if(ori_end_time.includes("pm") && ori_end_time.substring(0,2)!="12"){
     let end = ori_end_time.substring(0,ori_end_time.length -2);
     end=Number(end);
     end += 12;

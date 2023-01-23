@@ -224,8 +224,8 @@ CELERY_TIMEZONE = 'UTC'
 #gmail
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = "zhz0325zhz@gmail.com"
-EMAIL_HOST_PASSWORD = "jlfgbzkblukmdbrt"
+EMAIL_HOST_USER = "zhao990319@gmail.com"
+EMAIL_HOST_PASSWORD = "cupwssduxbbizzit"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False

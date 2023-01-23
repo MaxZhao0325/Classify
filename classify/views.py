@@ -105,7 +105,7 @@ def index(request):
         # immediately returns some errors earlier, if there is no chance of a result being returned
         if isSearchError:
             messages.error(request, typeOfError)
-            return redirect('/classify')
+            return redirect('/')
 
         # first check if the user pushes the button of a dept name
         if(not subject_sq and not cat_num_sq and not course_num_sq and not units_sq and not component_sq and not status_sq):

@@ -28,8 +28,8 @@
         width: max-content;
       }
       .accordion_button_add {
-        height: 40px;
-        width: 80%;
+        height: 50px;
+        width: 90%;
 	      cursor: pointer;
 	      text-align: center;
 	      border: 1px solid black;
@@ -40,8 +40,8 @@
         background: grey;
       }
       .accordion_button_delete {
-        height: 40px;
-        width: 80%;
+        height: 50px;
+        width: 90%;
 	      cursor: pointer;
 	      text-align: center;
 	      border: 1px solid black;
@@ -164,11 +164,11 @@
             {% csrf_token %}
             {% for course in favorite_courses %}
             {% if course in schedule_courses %}
-            <button class="accordion_button_delete" type="submit" name="delete_from_schedule" value="{{course.course_number}}" onclick="return confirm('You will remove it from your schedule, are you sure to do that?')"> <b>{{course.subject}}{{course.catalog_number}}-{{course.course_section}}({{course.component}})</b>
+            <button class="accordion_button_delete" type="submit" name="delete_from_schedule" value="{{course.course_number}}" onclick="return confirm('You will remove it from your schedule, are you sure to do that?')"> <b>{{course.subject}}{{course.catalog_number}}-{{course.course_section}}({{course.component}})</b> {{course.meetings_days}}{{course.meetings_start_time}}-{{course.meetings_end_time}}
             </button>
             <br>
             {% else %}
-            <button class="accordion_button_add" type="submit" name="add_to_schedule" value="{{course.course_number}}"> <b>{{course.subject}}{{course.catalog_number}}-{{course.course_section}}({{course.component}})</b>
+            <button class="accordion_button_add" type="submit" name="add_to_schedule" value="{{course.course_number}}"> <b>{{course.subject}}{{course.catalog_number}}-{{course.course_section}}({{course.component}})</b> {{course.meetings_days}}{{course.meetings_start_time}}-{{course.meetings_end_time}}
             </button>
             <br>
             {% endif %}

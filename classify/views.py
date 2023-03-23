@@ -248,7 +248,7 @@ def index(request):
             if(not query_results):
                 messages.error(request, 'No results found.')
                 return redirect('/')
-        query_results = query_results.order_by('id')
+        query_results = query_results.order_by('catalog_number')
 
         # classify the classes into dept + catalog number (cs3240) so that the index page can display as such
         for course in query_results:
@@ -291,7 +291,8 @@ def user(request):
 
         # if the delete_all button is clicked, delete all courses in the shoppingcart and the schedule
         if request.method == 'POST' and request.POST.get('delete_all'):
-            request.user.profile.courses.all().delete()
+            for course in request.user.profile.courses.all():
+                request.user.profile.courses.remove(course)
             messages.success(request, 'All your courses has been deleted from your Favorited Classes and your Schedule.')
             return redirect('/user')
 

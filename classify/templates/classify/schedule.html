@@ -181,6 +181,10 @@
             <br>
             <br>
             <br>
+            <form method="post">
+              {% csrf_token %}
+            <button type = "submit" class="btn btn-danger" name = "delete_all_schedule" value="delete_all_schedule" onclick="return confirm('All courses in your schedule will be deleted, are you sure to do that?')">Clear your schedule</button>
+            </form>
             <div id="dp"></div>
           </div>
         </div>

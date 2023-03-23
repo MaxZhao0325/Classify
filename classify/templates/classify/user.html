@@ -189,7 +189,7 @@
         <!-- button used to clean your shoppingcart and the schedule -->
         <form method="post">
           {% csrf_token %}
-          <button type = "submit" class="btn btn-danger" name = "delete_all" value="delete_all" onclick="return confirm('All courses in your shoppingcart and schedule will be deleted, are you sure to do that?')">DeleteAll</button>
+          <button type = "submit" class="btn btn-danger" name = "delete_all" value="delete_all" onclick="return confirm('All courses in your shoppingcart will be deleted, are you sure to do that?')">DeleteAll</button>
         </form>
 
           <div class="accordion" id="accordionTemplate" style="margin: 0; height: 100%;">

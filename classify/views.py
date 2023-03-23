@@ -293,7 +293,7 @@ def user(request):
         if request.method == 'POST' and request.POST.get('delete_all'):
             for course in request.user.profile.courses.all():
                 request.user.profile.courses.remove(course)
-            messages.success(request, 'All your courses has been deleted from your Favorited Classes and your Schedule.')
+            messages.success(request, 'All your courses has been deleted from your Favorited Classes.')
             return redirect('/user')
 
         # if the user tries to delete a course from the shopping cart, fetch the course by its course_number and delete it from user's shopping cart.
@@ -401,6 +401,14 @@ def get_time_float_start(course):
 # show the schedule of the current user
 def schedule(request):
     if (request.user.is_authenticated):
+
+        # if clear_all_schedule is clicked, remove all courses from user's scheduel
+        if request.method == 'POST' and request.POST.get('delete_all_schedule'):
+            for course in request.user.profile.schedule.courses.all():
+                request.user.profile.schedule.courses.remove(course)
+            messages.success(request, 'All your courses has been deleted from your Schedule.')
+            return redirect('/user/schedule')
+
         # if the user tries to delete a course from the schedule, access below
         if request.method == 'POST' and request.POST.get('delete_from_schedule') and request.POST.get('semester_code'):
             CourseNumToDelete = request.POST.get('delete_from_schedule')

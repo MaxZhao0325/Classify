@@ -160,9 +160,10 @@
           <div class="column" style="width:20%">
             <h3>Favorite classes</h3>
             <div class="side-bar">
+            {% for course in favorite_courses %}
             <form method="post">
             {% csrf_token %}
-            {% for course in favorite_courses %}
+            <input type="hidden" value="{{ course.semester_code }}" name="semester_code">
             {% if course in schedule_courses %}
             <button class="accordion_button_delete" type="submit" name="delete_from_schedule" value="{{course.course_number}}" onclick="return confirm('You will remove it from your schedule, are you sure to do that?')"> <b>{{course.subject}}{{course.catalog_number}}-{{course.course_section}}({{course.component}})</b> {{course.meetings_days}}{{course.meetings_start_time}}-{{course.meetings_end_time}}
             </button>
@@ -172,8 +173,8 @@
             </button>
             <br>
             {% endif %}
-            {% endfor %}
             </form>
+            {% endfor %}
             </div>
           </div>
           <div class="column" style="width:80%">
@@ -357,6 +358,9 @@ while(meeting_days.length>0){
   else{
     let start = ori_start_time.substring(0,ori_start_time.length -2);
     start+=".00";
+    if(start.length < 8){
+      start = "0" + start;
+    }
     start_time+=start;
     console.log(start)
   }
@@ -384,6 +388,9 @@ while(meeting_days.length>0){
   else{
     let end = ori_end_time.substring(0,ori_end_time.length -2);
     end+=".00";
+    if(end.length < 8){
+      end = "0" + end;
+    }
     end_time+=end;
     console.log(end)
   }

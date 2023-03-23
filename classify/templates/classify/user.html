@@ -186,11 +186,20 @@
           </div> -->
         <!-- </form> -->
 
+        <!-- button used to clean your shoppingcart and the schedule -->
+        <form method="post">
+          {% csrf_token %}
+          <button type = "submit" class="btn btn-danger" name = "delete_all" value="delete_all" onclick="return confirm('All courses in your shoppingcart and schedule will be deleted, are you sure to do that?')">DeleteAll</button>
+        </form>
+
           <div class="accordion" id="accordionTemplate" style="margin: 0; height: 100%;">
           
             {% for p in class_list %}
-          
-            <button class="accordion_button"> <b>{{p.subject}} {{p.catalog_number}}-{{p.course_section}} ({{ p.component }}) &emsp;&emsp;  {{p.description}}</b> </button>
+            {% if p.semester_code == 1238 %}
+            <button class="accordion_button"> <b>Fall2023 {{p.subject}} {{p.catalog_number}}-{{p.course_section}} ({{ p.component }}) &emsp;&emsp;  {{p.description}}</b> </button>
+            {% else %}
+            <button class="accordion_button"> <b>Spring2023 {{p.subject}} {{p.catalog_number}}-{{p.course_section}} ({{ p.component }}) &emsp;&emsp;  {{p.description}}</b> </button>
+            {% endif %}
             <div class="panel">        
               <div class="row">                
                 <div class="column" style="padding:12px; border-bottom:solid; border-bottom-color: greenyellow; float:left; width:30%; ">                        
@@ -210,13 +219,14 @@
                 <div class="column" style="padding:12px; border-bottom:solid; border-bottom-color: greenyellow; float:left; width:30%; ">
                   <p class="list-inline"><form method="post">
                     {% csrf_token %}
+                    <input type="hidden" value="{{ p.semester_code }}" name="semester_code">
                     <button type = "submit" class="btn btn-danger" name = "delete_course" value={{p.course_number}} onclick="return confirm('The corresponding course in your schedule will also be deleted, are you sure to do that?')">Delete</button>
                     <button type = "submit" class="btn" style="background-color: #bdd0b1;" name = "add_to_schedule" value={{p.course_number}}>Add to Schedule</button>
                   </form></p>
                   {% if p in muted_course %}
-                  <a href="/unmute_notification/{{user.id}}/{{p.course_number}}/" onclick="return confirm('You will now receive notifications on this course, are you sure to do that?')">Receive email notification for this course</a>
+                  <a href="/unmute_notification/{{user.id}}/{{p.course_number}}/{{p.semester_code}}/" onclick="return confirm('You will now receive notifications on this course, are you sure to do that?')">Receive email notification for this course</a>
                   {% else %}
-                  <a href="/mute_notification/{{user.id}}/{{p.course_number}}/" onclick="return confirm('You will not receive any update news on this course, are you sure to do that?')">Do not receive email notification for this course</a>
+                  <a href="/mute_notification/{{user.id}}/{{p.course_number}}/{{p.semester_code}}/" onclick="return confirm('You will not receive any update news on this course, are you sure to do that?')">Do not receive email notification for this course</a>
                   {% endif %}
                 </div>
               </div>    

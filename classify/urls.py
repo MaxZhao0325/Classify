@@ -13,8 +13,8 @@ urlpatterns = [
     path('send_friend_request/<int:userID>/',views.send_friend_request, name='send_friend_request'),
     path('accept_friend_request/<int:requestID>/',views.accept_friend_request, name='accept_friend_request'),
     path('decline_friend_request/<int:requestID>/',views.decline_friend_request, name='decline_friend_request'),
-    path('mute_notification/<int:userID>/<int:course_number>/',views.mute_notification, name='mute_notification'),
-    path('unmute_notification/<int:userID>/<int:course_number>/',views.unmute_notification, name='unmute_notification'),
+    path('mute_notification/<int:userID>/<int:course_number>/<int:semester_code>/',views.mute_notification, name='mute_notification'),
+    path('unmute_notification/<int:userID>/<int:course_number>/<int:semester_code>/',views.unmute_notification, name='unmute_notification'),
     # for google console authentication
     path('googlef8e431e468b388bf.html', views.google_console, name='google_console_auth'),
     path('9e070c8784435c3d9b4b850d6a1e4d67.txt', views.detectify, name='detectify'),

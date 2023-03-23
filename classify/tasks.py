@@ -7,7 +7,7 @@ from datetime import datetime # for time stamps
 import json # exporting to files
 from classify.models import Class, Dept, Profile, ProfileForm, Schedule, ScheduleForm, Friend_Request, Comment
 from django.contrib.auth.models import User
-from cs3240a17.settings import EMAIL_HOST_USER
+from cs3240a17.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 from django.core.mail import send_mail
 import lxml
 
@@ -15,6 +15,20 @@ import lxml
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
+
+import smtplib
+from email.mime.text import MIMEText
+# send_email function
+@shared_task
+def send_email(subject, body, sender, recipients, password):
+    msg = MIMEText(body)
+    msg['Subject'] = subject
+    msg['From'] = sender
+    msg['To'] = ', '.join(recipients)
+    smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    smtp_server.login(sender, password)
+    smtp_server.sendmail(sender, recipients, msg.as_string())
+    smtp_server.quit()
 
 # scraping function
 @shared_task
@@ -35,7 +49,7 @@ def hacker():
         count+=1
         page_num = 1
         page=str(page_num)
-        url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1232&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
+        url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1238&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
         #Define header for the post request
         r = requests.get(url_search)
         data = r.json()
@@ -74,8 +88,12 @@ def hacker():
                     else:
                         end_time = end_time+"am"
 
-                instructor_name = s['instructors'][0]['name']
-                instructor_email = s['instructors'][0]['email']
+                if(s['instructors'][0]['name']=='-' and len(s['instructors'])>1):
+                    instructor_name = s['instructors'][1]['name']
+                    instructor_email = s['instructors'][1]['email']
+                else:
+                    instructor_name = s['instructors'][0]['name']
+                    instructor_email = s['instructors'][0]['email']
                 course_number = s['class_nbr']
                 semester_code = s['strm']
                 course_section = s['class_section']
@@ -119,9 +137,9 @@ def hacker():
                 )
 
                 # if the course is in the database, update it
-                if (Class.objects.filter(course_number=course_number)):
+                if (Class.objects.filter(course_number=course_number, semester_code=semester_code)):
                     # fetch the same course stored in the database
-                    class_in_database = Class.objects.all().get(course_number=course_number)
+                    class_in_database = Class.objects.all().get(course_number=course_number, semester_code=semester_code)
 
                     # if the enrollment_status changes from Waitlist to Open, then send the email to all users who have that course in their shoppingcart.
                     if ((class_in_database.enrollment_status=='W' or class_in_database.enrollment_status=='C') and (class_to_update.enrollment_status=='O')):
@@ -136,8 +154,9 @@ def hacker():
                                 namelist+=" "
                                 namelist+=str(profile.user.email)
                         if(recipient_list):
-                            send_mail(subject, message, EMAIL_HOST_USER, recipient_list, fail_silently = False)
-                            send_mail('recipient_list', message + namelist, EMAIL_HOST_USER, ['zhz990319@gmail.com'], fail_silently = False)
+                            print(recipient_list)
+                            send_email(subject, message, EMAIL_HOST_USER, recipient_list, EMAIL_HOST_PASSWORD)
+                            send_email('recipient_list', message + namelist, EMAIL_HOST_USER, ['zhz990319@gmail.com'], EMAIL_HOST_PASSWORD)
 
                     # if ((class_in_database.enrollment_status=='W' or class_in_database.enrollment_status=='C') and (class_to_update.enrollment_status=='O')):
                     #     subject='the course status changes'
@@ -186,7 +205,7 @@ def hacker():
 
             page_num+=1
             page=str(page_num)
-            url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1232&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
+            url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1238&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
             r = requests.get(url_search)
             data = r.json()
     print(count)
@@ -216,3 +235,5 @@ def hacker():
 # }
 
 # hacker()
+
+

@@ -157,6 +157,16 @@
           {% csrf_token %}
           <div class='row'>
             <p>
+              <!-- search by semester, default is the most recent semester: 1238 for fall2023 -->
+              <input id="semester_search" list="semester" type = "text" name = "semester_search" class = "text-center rounded" style="background-color: #F3F7F1; max-width: 3cm;">
+              <datalist name="semester" id="semester">
+                <!-- 1238 -->
+                <option id='1238' value='Fall2023'>  
+                <!-- 1232 -->
+                <option id='1232' value='Spring2023'>   
+              </datalist>
+              <!-- script used to set the default value of semester_code -->
+              <script>$('#semester_search').val($('#semester option#1238').attr('value'));</script>
               <!-- search by subject name -->
               <input list="sbj" type = "text" name = "subject_search" placeholder="Search by Subject" class = "text-center rounded" style="background-color: #F3F7F1;">
               <datalist id="sbj">
@@ -228,9 +238,10 @@
         {% if query_results_classified %}
           <div class="accordion" id="accordionTemplate" style="margin: 0; height: 100%;">
             {% for key, value in query_results_classified.items %}
-            <button class="accordion_button"> <b> {{value.0.subject}} {{value.0.catalog_number}} &emsp;&emsp;&emsp;  {{value.0.description}} </b>
+            <button class="accordion_button"> <b> {{semester}} {{value.0.subject}} {{value.0.catalog_number}} &emsp;&emsp;&emsp;  {{value.0.description}} </b>
             </button>
             <div class="panel">
+              <a href="https://vagrades.com/uva/{{value.0.subject}}{{value.0.catalog_number}}" target="_blank" rel="noopener noreferrer">See VAgrade for this course</a>
             {% for query in value %}
               <div class="row">                
                 <div class="column" style="padding:12px; border-bottom:solid; border-bottom-color: greenyellow; float:left; width:30%; ">       
@@ -251,6 +262,7 @@
                   <p class="list-inline"><form method="post">
                     {% csrf_token %}
                       <input type="hidden" value="{{ query.course_number }}" name="course_pk">
+                      <input type="hidden" value="{{ query.semester_code }}" name="semester_code">
                       <button type="submit" class="btn btn-warning">★ Favorite Class</button>  
                   </form></p>
                 </div>

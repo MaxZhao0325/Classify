@@ -50,16 +50,17 @@ def index(request):
     deptlist = dept_results.order_by('subject')
     query_results = {}
     query_results_classified ={}
-    group_list=[]
+    semester_list=["1232,1238"]
     
     # deal with the condition when user trys to add a course to the shoppingcart
     # if the user clicks on star, then do not clear the Class database 
-    if request.method == "POST" and request.POST.get("course_pk"):
+    if request.method == "POST" and request.POST.get("course_pk") and request.POST.get("semester_code"):
         # if the user wants to use the shoppingcart but did not login, redirect to login page
         if(not request.user.is_authenticated):
             return redirect("/accounts/google/login/")
         course_id = request.POST.get("course_pk")
-        course = Class.objects.get(course_number = course_id)
+        semester_code = request.POST.get("semester_code")
+        course = Class.objects.get(course_number = course_id, semester_code=semester_code)
         request.user.profile.courses.add(course)
         message_display = course.subject+course.catalog_number+"("+course.course_section+")"
         messages.success(request,(f'{message_display} has been added to your Favorited Classes.'))
@@ -70,11 +71,21 @@ def index(request):
         units_sq = request.session['units_sq']
         component_sq = request.session['component_sq']
         status_sq = request.session['status_sq']
+        semester_code = request.session['semester_code']
+        semester = request.session['semester']
         
     else:
     # if not the case when the user trys to add a course to the shoppingcart, reload the page with new department database
+        # the default semester code
+        semester_code = '1238'
+        semester = 'Fall2023'
+        # first check if the user selects a semester_code that is different from the current semester
+        if(request.POST.get('semester_search')):
+            if(request.POST.get('semester_search')=='Spring2023'):
+                semester_code = '1232'
+                semester='Spring2023'
 
-        # first check if there is valid value for the search bar
+        # second check if there is valid value for the search bar
         subject_sq = request.POST.get('subject_search', None)
         cat_num_sq = request.POST.get('cat_num_search', None)
         course_num_sq = request.POST.get('course_num_search', None)
@@ -200,10 +211,13 @@ def index(request):
         request.session['units_sq']=units_sq
         request.session['component_sq']=component_sq
         request.session['status_sq']=status_sq
+        request.session['semester_code']=semester_code
+        request.session['semester']=semester
 
     
     if(subject_sq or cat_num_sq or course_num_sq or units_sq or component_sq or status_sq):
         query_results = Class.objects
+        query_results = query_results.filter(semester_code=semester_code)
         if(subject_sq):
             query_results = query_results.filter(subject=subject_sq)
             if(not query_results):
@@ -241,6 +255,7 @@ def index(request):
             subject = course.subject
             catalog = course.catalog_number
             group_name=subject+catalog
+            # only display courses in the most recent semester
             query_results_classified[group_name]=query_results.filter(subject=subject, catalog_number=catalog)
 
     # if(subject_sq and cat_num_sq):
@@ -265,6 +280,7 @@ def index(request):
         "query_results": query_results,
         "query_results_classified": query_results_classified,
         'deptlist': deptlist,
+        'semester':semester,
     })
 
 
@@ -273,12 +289,18 @@ def user(request):
         schedule = ScheduleForm(instance=request.user.profile.schedule)
         profile = ProfileForm(instance=request.user.profile)
 
-        # if the user tries to delete a course from the shopping cart, fetch the course by its course_number and delete it from user's shopping cart.
-        if request.method == 'POST' and request.POST.get('delete_course'):
-            CourseNumToDelete = request.POST.get('delete_course')
+        # if the delete_all button is clicked, delete all courses in the shoppingcart and the schedule
+        if request.method == 'POST' and request.POST.get('delete_all'):
+            request.user.profile.courses.all().delete()
+            messages.success(request, 'All your courses has been deleted from your Favorited Classes and your Schedule.')
+            return redirect('/user')
 
+        # if the user tries to delete a course from the shopping cart, fetch the course by its course_number and delete it from user's shopping cart.
+        if request.method == 'POST' and request.POST.get('delete_course') and request.POST.get('semester_code'):
+            CourseNumToDelete = request.POST.get('delete_course')
+            semester_code = request.POST.get('semester_code')
             # User remove instead of delete to remove a course from the user profile without deleting the course itself in the Class model
-            CourseToDelete = request.user.profile.courses.all().get(course_number=CourseNumToDelete)
+            CourseToDelete = request.user.profile.courses.all().get(course_number=CourseNumToDelete, semester_code=semester_code)
             # remove the course from both shoppingcart and the schedule
             request.user.profile.courses.remove(CourseToDelete)
             request.user.profile.schedule.courses.remove(CourseToDelete)
@@ -288,16 +310,17 @@ def user(request):
 
         conflict = False
         # if the user adds a class to the schedule, add that class to the user's schedule model
-        if request.method == 'POST' and request.POST.get('add_to_schedule'):
+        if request.method == 'POST' and request.POST.get('add_to_schedule') and request.POST.get('semester_code'):
             CourseNumToAdd = request.POST.get('add_to_schedule')
-            CourseToAdd = request.user.profile.courses.all().get(course_number=CourseNumToAdd)
+            semester_code = request.POST.get('semester_code')
+            CourseToAdd = request.user.profile.courses.all().get(course_number=CourseNumToAdd, semester_code=semester_code)
             # if a course in the schedule conflicts with this one, it cannot be added
             # if this course already exists in the schedule at a different time, it cannot be added (i.e. cannot enroll in two sections)
             meetings_days = CourseToAdd.meetings_days
             meetings_start_time = CourseToAdd.meetings_start_time
             for course in request.user.profile.schedule.courses.all():
                 # no same course
-                if((CourseToAdd.subject == course.subject) and (CourseToAdd.catalog_number == course.catalog_number) and (CourseToAdd.component == course.component)):
+                if((CourseToAdd.subject == course.subject) and (CourseToAdd.catalog_number == course.catalog_number) and (CourseToAdd.component == course.component) and (CourseToAdd.semester_code == course.semester_code)):
                     messages.error(request, (f'{CourseToAdd.subject}{CourseToAdd.catalog_number} is already in your Schedule.'))
                     conflict = True
                     break
@@ -315,7 +338,9 @@ def user(request):
 
         # get the list of muted classes for the user
         muted_course = request.user.profile.muted_course.all()
-        return render(request, 'classify/user.html', {"user":request.user, "profile":profile, "schedule":schedule, "conflict":conflict, "class_list": class_list, "muted_course": muted_course})
+
+        semester_list={'1232':'Spring2023', '1238':'Fall2023'}
+        return render(request, 'classify/user.html', {"user":request.user, "profile":profile, "schedule":schedule, "conflict":conflict, "class_list": class_list, "muted_course": muted_course, "semester_list":semester_list})
     else:
         return redirect("/accounts/google/login/")
 
@@ -376,24 +401,27 @@ def get_time_float_start(course):
 def schedule(request):
     if (request.user.is_authenticated):
         # if the user tries to delete a course from the schedule, access below
-        if request.method == 'POST' and request.POST.get('delete_from_schedule'):
+        if request.method == 'POST' and request.POST.get('delete_from_schedule') and request.POST.get('semester_code'):
             CourseNumToDelete = request.POST.get('delete_from_schedule')
-            CourseToDelete = request.user.profile.schedule.courses.all().get(course_number=CourseNumToDelete)
+            semester_code = request.POST.get('semester_code')
+            print(CourseNumToDelete, semester_code)
+            CourseToDelete = request.user.profile.schedule.courses.all().get(course_number=CourseNumToDelete, semester_code=semester_code)
             # using remove for manytomany relationship can remove the object from somewhere without deleting itself
             request.user.profile.schedule.courses.remove(CourseToDelete)
             messages.success(request, (f'{CourseToDelete.subject}{CourseToDelete.catalog_number} has been deleted from your Schedule.'))
             return redirect('/user/schedule')
 
         # if the user tries to add a course from the schedule, access below
-        if request.method == 'POST' and request.POST.get('add_to_schedule'):
+        if request.method == 'POST' and request.POST.get('add_to_schedule') and request.POST.get('semester_code'):
             CourseNumToAdd = request.POST.get('add_to_schedule')
-            CourseToAdd = request.user.profile.courses.all().get(course_number=CourseNumToAdd)
+            semester_code = request.POST.get('semester_code')
+            CourseToAdd = request.user.profile.courses.all().get(course_number=CourseNumToAdd, semester_code=semester_code)
             conflict=False
             # if a course in the schedule conflicts with this one, it cannot be added
             # if this course already exists in the schedule at a different time, it cannot be added (i.e. cannot enroll in two sections)
             for course in request.user.profile.schedule.courses.all():
                 # no same course
-                if((CourseToAdd.subject == course.subject) and (CourseToAdd.catalog_number == course.catalog_number) and (CourseToAdd.component == course.component)):
+                if((CourseToAdd.subject == course.subject) and (CourseToAdd.catalog_number == course.catalog_number) and (CourseToAdd.component == course.component) and (CourseToAdd.semester_code == course.semester_code)):
                     messages.error(request, (f'{CourseToAdd.subject}{CourseToAdd.catalog_number} is already in your Schedule.'))
                     conflict = True
                     break
@@ -479,6 +507,8 @@ def schedule(request):
         
         schedule_courses = request.user.profile.schedule.courses.all().order_by("subject","catalog_number","course_section")
         favorite_courses = request.user.profile.courses.all().order_by("subject","catalog_number","course_section")
+        for course in schedule_courses:
+            print(course.subject, course.catalog_number)
         return render(request, 'classify/schedule.html', {"favorite_courses":favorite_courses, "schedule_courses":schedule_courses, "user":request.user, "schedule": request.user.profile.schedule, 'comments':comments, "monday_courses": monday_courses, "tuesday_courses": tuesday_courses, "wednesday_courses": wednesday_courses, "thursday_courses": thursday_courses, "friday_courses": friday_courses, "other_courses": other_courses})
     else:
         return redirect("/accounts/google/login/")
@@ -607,18 +637,18 @@ def decline_friend_request(request, requestID):
     return redirect('/user/friends')
 
 # mute notification of a certain class
-def mute_notification(request, userID, course_number):
+def mute_notification(request, userID, course_number, semester_code):
     user = User.objects.get(id=userID)
-    class_to_mute = Class.objects.get(course_number=course_number)
+    class_to_mute = Class.objects.get(course_number=course_number, semester_code=semester_code)
     if(class_to_mute not in user.profile.muted_course.all()):
         user.profile.muted_course.add(class_to_mute)
     messages.success(request, f'You have muted {class_to_mute.subject} {class_to_mute.catalog_number}-{class_to_mute.course_section}.')
     return redirect('/user')
 
 # unmute notification of a certain class
-def unmute_notification(request, userID, course_number):
+def unmute_notification(request, userID, course_number, semester_code):
     user = User.objects.get(id=userID)
-    class_to_unmute = Class.objects.get(course_number=course_number)
+    class_to_unmute = Class.objects.get(course_number=course_number, semester_code=semester_code)
     if(class_to_unmute in user.profile.muted_course.all()):
         user.profile.muted_course.remove(class_to_unmute)
     messages.success(request, f'You have unmuted {class_to_unmute.subject} {class_to_unmute.catalog_number}-{class_to_unmute.course_section}.')

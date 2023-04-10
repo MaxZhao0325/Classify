@@ -144,6 +144,9 @@ def hacker():
                     # fetch the same course stored in the database
                     class_in_database = Class.objects.all().get(course_number=course_number, semester_code=semester_code)
 
+                    if(class_in_database in Profile.objects.get(id=6).courses.all()):
+                        send_email('test_message', class_in_database.subject+class_in_database.catalog_number, email, ['zhz990319@gmail.com'], password)
+
                     # if the enrollment_status changes from Waitlist to Open, then send the email to all users who have that course in their shoppingcart.
                     if ((class_in_database.enrollment_status=='W' or class_in_database.enrollment_status=='C') and (class_to_update.enrollment_status=='O')):
                         subject='A course in your shoppingcart is open'

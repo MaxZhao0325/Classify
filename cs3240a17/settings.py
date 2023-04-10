@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "$*=!%m=lwzx_(+#zu4*v-gfu8fs8bc!u01)_87390tk5-f1c5e"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['classify.herokuapp.com', '127.0.0.1', 'localhost']
 
@@ -224,14 +224,14 @@ CELERY_TIMEZONE = 'UTC'
 #gmail
 # EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = "zhz459794@gmail.com"
-EMAIL_HOST_PASSWORD = "esjgsxtgaixdlyzr"
+# EMAIL_HOST_USER = Email_sender.objects.first().username
+# EMAIL_HOST_PASSWORD = Email_sender.objects.first().passcode
 # EMAIL_PORT = 587
 # EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False
 
 # redirect http to https for safety
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = True
 
 # secure cookie based session
 SESSION_ENGINE='django.contrib.sessions.backends.signed_cookies'

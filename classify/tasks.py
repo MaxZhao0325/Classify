@@ -5,9 +5,9 @@ import requests # pulling data
 from bs4 import BeautifulSoup # xml parsing
 from datetime import datetime # for time stamps
 import json # exporting to files
-from classify.models import Class, Dept, Profile, ProfileForm, Schedule, ScheduleForm, Friend_Request, Comment
+from classify.models import Class, Dept, Profile, ProfileForm, Schedule, ScheduleForm, Friend_Request, Comment, Email_sender
 from django.contrib.auth.models import User
-from cs3240a17.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
+# from cs3240a17.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 from django.core.mail import send_mail
 import lxml
 
@@ -33,6 +33,9 @@ def send_email(subject, body, sender, recipients, password):
 # scraping function
 @shared_task
 def hacker():
+    # get the email username and passcode from backend
+    email=Email_sender.objects.first().username
+    password=Email_sender.objects.first().passcode
 
     #class_list=[]
 
@@ -149,14 +152,14 @@ def hacker():
                         namelist=""
                         for profile in Profile.objects.all():
                             # if the updated course is in user's favorite but not muted, send their message
-                            if((profile.courses.filter(course_number=class_in_database.course_number)) and (class_in_database not in profile.muted_course.all())):
+                            if((profile.courses.filter(course_number=class_in_database.course_number, semester_code=class_in_database.semester_code)) and (class_in_database not in profile.muted_course.all())):
                                 recipient_list.append(profile.user.email)
                                 namelist+=" "
                                 namelist+=str(profile.user.email)
                         if(recipient_list):
                             print(recipient_list)
-                            send_email(subject, message, EMAIL_HOST_USER, recipient_list, EMAIL_HOST_PASSWORD)
-                            send_email('recipient_list', message + namelist, EMAIL_HOST_USER, ['zhz990319@gmail.com'], EMAIL_HOST_PASSWORD)
+                            send_email(subject, message, email, recipient_list, password)
+                            send_email('recipient_list', message + namelist, email, ['zhz990319@gmail.com'], password)
 
                     # if ((class_in_database.enrollment_status=='W' or class_in_database.enrollment_status=='C') and (class_to_update.enrollment_status=='O')):
                     #     subject='the course status changes'

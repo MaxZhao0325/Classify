@@ -11,6 +11,10 @@ import django
 # from django_google_maps import fields as map_fields
 # Create your models here.
 
+class Email_sender(models.Model):
+    username=models.CharField(max_length=100, default="")
+    passcode=models.CharField(max_length=100, default="")
+
 # A less-detailed version of a class, this is meant to be used when searching
 # This should speed up search requests.
 class Class(models.Model):

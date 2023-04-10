@@ -4,7 +4,9 @@ from django.contrib import admin
 
 
 # Register your models here.
-from .models import Class, Dept, Profile, ProfileForm, Schedule, Friend_Request, Comment
+from .models import Class, Dept, Profile, ProfileForm, Schedule, Friend_Request, Comment, Email_sender
+
+admin.site.register(Email_sender)
 
 class DeptAdmin(admin.ModelAdmin):
     list_display = ('subject',)

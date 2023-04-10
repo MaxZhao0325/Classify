@@ -20,7 +20,7 @@ app.conf.beat_schedule = {
     # executes every 2 minute
     'scraping-task-two-min': {
         'task': 'classify.tasks.hacker',
-        'schedule': crontab(minute='*/30'),
+        'schedule': crontab(minute='*/20'),
     },
     # executes every 15 minutes
     # 'scraping-task-fifteen-min': {

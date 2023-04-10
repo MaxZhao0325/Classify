@@ -9,7 +9,6 @@ from classify.models import Class, Dept, Profile, ProfileForm, Schedule, Schedul
 from django.contrib.auth.models import User
 # from cs3240a17.settings import EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 from django.core.mail import send_mail
-import lxml
 
 
 from celery.utils.log import get_task_logger

@@ -138,9 +138,9 @@ def hacker():
                     facility_description = facility_description,
                 )
 
-                if(len(Class.objects.filter(course_number=course_number, semester_code=semester_code))>1):
-                    Class.objects.filter(course_number=course_number, semester_code=semester_code)[0].delete()
-                    print(subject+catalog_number, semester_code)
+                # if(len(Class.objects.filter(course_number=course_number, semester_code=semester_code))>1):
+                #     Class.objects.filter(course_number=course_number, semester_code=semester_code)[0].delete()
+                #     print(subject+catalog_number, semester_code)
 
                 # if the course is in the database, update it
                 if (Class.objects.filter(course_number=course_number, semester_code=semester_code)):

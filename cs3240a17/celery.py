@@ -18,9 +18,9 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     # executes every 2 minute
-    'scraping-task-60-min': {
+    'scraping-task-30-min': {
         'task': 'classify.tasks.hacker',
-        'schedule': crontab(minute='*/60'),
+        'schedule': crontab(minute='*/30'),
     },
     # executes every 15 minutes
     # 'scraping-task-fifteen-min': {

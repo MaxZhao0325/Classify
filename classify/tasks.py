@@ -90,12 +90,22 @@ def hacker():
                     else:
                         end_time = end_time+"am"
 
-                if(s['instructors'][0]['name']=='-' and len(s['instructors'])>1):
-                    instructor_name = s['instructors'][1]['name']
-                    instructor_email = s['instructors'][1]['email']
-                else:
-                    instructor_name = s['instructors'][0]['name']
-                    instructor_email = s['instructors'][0]['email']
+                # fetch the instructor's name and email using a loop
+                # example: "instructors":[{"name":"-","email":""},{"name":"-","email":""},{"name":"Sara McClellan","email":"pzy4um@virginia.edu"}]
+                instructor_name = '-'
+                instructor_email = ''
+                for instructor in s['instructors']:
+                    if(instructor['name']!='-'):
+                        instructor_name = instructor['name']
+                        instructor_email = instructor['email']
+                        break
+
+                # if(s['instructors'][0]['name']=='-' and len(s['instructors'])>1):
+                #     instructor_name = s['instructors'][1]['name']
+                #     instructor_email = s['instructors'][1]['email']
+                # else:
+                #     instructor_name = s['instructors'][0]['name']
+                #     instructor_email = s['instructors'][0]['email']
                 course_number = s['class_nbr']
                 semester_code = s['strm']
                 course_section = s['class_section']

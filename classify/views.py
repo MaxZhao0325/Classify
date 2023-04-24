@@ -217,6 +217,7 @@ def index(request):
     
     if(subject_sq or cat_num_sq or course_num_sq or units_sq or component_sq or status_sq):
         query_results = Class.objects
+        # only display the course for current searching semester
         query_results = query_results.filter(semester_code=semester_code)
         if(subject_sq):
             query_results = query_results.filter(subject=subject_sq)
@@ -248,7 +249,7 @@ def index(request):
             if(not query_results):
                 messages.error(request, 'No results found.')
                 return redirect('/')
-        query_results = query_results.order_by('catalog_number')
+        query_results = query_results.order_by('subject','catalog_number','course_section')
 
         # classify the classes into dept + catalog number (cs3240) so that the index page can display as such
         for course in query_results:

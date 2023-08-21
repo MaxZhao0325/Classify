@@ -220,7 +220,7 @@ def index(request):
         request.session['semester']=semester
         request.session['attribute']=attribute
 
-    attribute_map = {'Science & Society':'SS'}
+    attribute_map = {'Artistic, Interpretive, Phil': 'AIP',"Chem/Math/Physical Universe":"CMP",'Cultures/Societies World':'CSW',"First Writing":'R21C1','Historical Perspective':'HP','Living Systems':'LS', 'Public Interest Technology':'PIT', 'Quantif, Comptutation, Data an':'QCD', 'Science & Society':'SS', 'Second Writing':'R21C2', 'Social & Economic Systems':'SES','World Language':'WL'}
     if(attribute):
         attribute = attribute_map[attribute]
     if(subject_sq or cat_num_sq or course_num_sq or units_sq or component_sq or status_sq or attribute):

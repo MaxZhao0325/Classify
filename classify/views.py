@@ -73,6 +73,7 @@ def index(request):
         status_sq = request.session['status_sq']
         semester_code = request.session['semester_code']
         semester = request.session['semester']
+        attribute = request.session['attribute']
         
     else:
     # if not the case when the user trys to add a course to the shoppingcart, reload the page with new department database
@@ -95,6 +96,7 @@ def index(request):
         units_sq = request.POST.get('units_search', None)
         component_sq = request.POST.get('component_search', None)
         status_sq = request.POST.get('status_search', None)
+        attribute = request.POST.get('attribute_search', None)
 
         if(subject_sq or component_sq or cat_num_sq or course_num_sq or status_sq):
             if(subject_sq):
@@ -216,9 +218,12 @@ def index(request):
         request.session['status_sq']=status_sq
         request.session['semester_code']=semester_code
         request.session['semester']=semester
+        request.session['attribute']=attribute
 
-    
-    if(subject_sq or cat_num_sq or course_num_sq or units_sq or component_sq or status_sq):
+    attribute_map = {'Science & Society':'SS'}
+    if(attribute):
+        attribute = attribute_map[attribute]
+    if(subject_sq or cat_num_sq or course_num_sq or units_sq or component_sq or status_sq or attribute):
         query_results = Class.objects
         # only display the course for current searching semester
         query_results = query_results.filter(semester_code=semester_code)
@@ -249,6 +254,11 @@ def index(request):
                 return redirect('/')
         if(status_sq):
             query_results = query_results.filter(enrl_stat_descr=status_sq)
+            if(not query_results):
+                messages.error(request, 'No results found.')
+                return redirect('/')
+        if(attribute):
+            query_results = query_results.filter(course_attribute__icontains=attribute)
             if(not query_results):
                 messages.error(request, 'No results found.')
                 return redirect('/')

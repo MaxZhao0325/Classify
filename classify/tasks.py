@@ -216,6 +216,8 @@ def hacker():
                         class_in_database.meetings_end_time = class_to_update.meetings_end_time
                     if(class_to_update.facility_description != class_in_database.facility_description):
                         class_in_database.facility_description = class_to_update.facility_description
+                    if(class_to_update.course_attribute != class_in_database.course_attribute):
+                        class_in_database.course_attribute = class_to_update.course_attribute
                     class_in_database.save()
                 # if the course has never stored in the database before, store it
                 else:

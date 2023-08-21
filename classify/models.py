@@ -40,7 +40,7 @@ class Class(models.Model):
     meetings_start_time = models.SlugField(max_length = 10, default="")
     meetings_end_time = models.SlugField(max_length = 10, default="")
     facility_description = models.CharField(max_length=50, default="")
-    course_attribute = models.CharField(max_length=100, default="")
+    course_attribute = models.CharField(max_length=500, default="")
 
     def str(self) -> str:
         return super().str()

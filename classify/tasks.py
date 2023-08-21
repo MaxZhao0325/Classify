@@ -122,6 +122,7 @@ def hacker():
                 enrollment_status = s['enrl_stat']
                 enrl_stat_descr = str.upper(s['enrl_stat_descr'])
                 topic = s['topic']
+                attribute = s['crse_attr_value']
                 
                 class_to_update = Class(
                     instructor_name = instructor_name,
@@ -146,6 +147,7 @@ def hacker():
                     meetings_start_time = start_time,
                     meetings_end_time = end_time,
                     facility_description = facility_description,
+                    course_attribute = attribute
                 )
 
                 # if(len(Class.objects.filter(course_number=course_number, semester_code=semester_code))>1):

@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "$*=!%m=lwzx_(+#zu4*v-gfu8fs8bc!u01)_87390tk5-f1c5e"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['classify.herokuapp.com', '127.0.0.1', 'localhost']
 
@@ -240,7 +240,7 @@ CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://' + REDIS_HOST + ':
 # EMAIL_USE_SSL = False
 
 # redirect http to https for safety
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
 # secure cookie based session
 SESSION_ENGINE='django.contrib.sessions.backends.signed_cookies'

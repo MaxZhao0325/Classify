@@ -193,13 +193,12 @@
         </form>
 
           <div class="accordion" id="accordionTemplate" style="margin: 0; height: 100%;">
-          
+          {% for semester_key, semester_value in semester_list.items %}
+            <h3>courses for {{semester_value}}</h3>
             {% for p in class_list %}
-            {% if p.semester_code == 1238 %}
-            <button class="accordion_button"> <b>Fall2023 {{p.subject}} {{p.catalog_number}}-{{p.course_section}} ({{ p.component }}) &emsp;&emsp;  {{p.description}}</b> </button>
-            {% else %}
-            <button class="accordion_button"> <b>Spring2023 {{p.subject}} {{p.catalog_number}}-{{p.course_section}} ({{ p.component }}) &emsp;&emsp;  {{p.description}}</b> </button>
-            {% endif %}
+            {% if p.semester_code == semester_key %}
+            <button class="accordion_button"> <b>{{ semester_value }} {{p.subject}} {{p.catalog_number}}-{{p.course_section}} ({{ p.component }}) &emsp;&emsp;  {{p.description}}</b> </button>
+
             <div class="panel">        
               <div class="row">                
                 <div class="column" style="padding:12px; border-bottom:solid; border-bottom-color: greenyellow; float:left; width:30%; ">                        
@@ -231,8 +230,9 @@
                 </div>
               </div>    
             </div>
-            
+            {% endif %}
             {% endfor %}
+          {% endfor %}
         
         </div>
 

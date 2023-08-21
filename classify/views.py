@@ -344,7 +344,7 @@ def user(request):
         # get the list of muted classes for the user
         muted_course = request.user.profile.muted_course.all()
 
-        semester_list={'1232':'Spring2023', '1238':'Fall2023'}
+        semester_list={1232:'Spring2023', 1238:'Fall2023', 1242:'Spring2024'}
         return render(request, 'classify/user.html', {"user":request.user, "profile":profile, "schedule":schedule, "conflict":conflict, "class_list": class_list, "muted_course": muted_course, "semester_list":semester_list})
     else:
         return redirect("/accounts/google/login/")

@@ -50,7 +50,7 @@ def index(request):
     deptlist = dept_results.order_by('subject')
     query_results = {}
     query_results_classified ={}
-    semester_list=["1232,1238"]
+    semester_list=["1232,1238,1242"]
     
     # deal with the condition when user trys to add a course to the shoppingcart
     # if the user clicks on star, then do not clear the Class database 
@@ -84,6 +84,9 @@ def index(request):
             if(request.POST.get('semester_search')=='Spring2023'):
                 semester_code = '1232'
                 semester='Spring2023'
+            if(request.POST.get('semester_search')=='Spring2024'):
+                semester_code = '1242'
+                semester='Spring2024'
 
         # second check if there is valid value for the search bar
         subject_sq = request.POST.get('subject_search', None)

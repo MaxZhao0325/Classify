@@ -51,7 +51,7 @@ def hacker():
         count+=1
         page_num = 1
         page=str(page_num)
-        url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1238&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
+        url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1242&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
         #Define header for the post request
         r = requests.get(url_search)
         data = r.json()
@@ -221,7 +221,7 @@ def hacker():
 
             page_num+=1
             page=str(page_num)
-            url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1238&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
+            url_search='https://sisuva.admin.virginia.edu/psc/ihprd/UVSS/SA/s/WEBLIB_HCX_CM.H_CLASS_SEARCH.FieldFormula.IScript_ClassSearch?institution=UVA01&term=1242&date_from=&date_thru=&subject=%s&subject_like=&catalog_nbr=&time_range=&days=&campus=&location=&x_acad_career=&acad_group=&rqmnt_designtn=&instruction_mode=&keyword=&class_nbr=&acad_org=&enrl_stat=&crse_attr=&crse_attr_value=&instructor_name=&session_code=&units=&page=%s' % (str(subj.subject), page)
             r = requests.get(url_search)
             data = r.json()
     print(count)

@@ -157,7 +157,7 @@
           {% csrf_token %}
           <div class='row'>
             <p>
-              <!-- search by semester, default is the most recent semester: 1238 for fall2023 -->
+              <!-- search by semester, default is the most recent semester: 1242 for Spring2024 -->
               <input id="semester_search" list="semester" type = "text" name = "semester_search" class = "text-center rounded" style="background-color: #F3F7F1; max-width: 3cm;">
               <datalist name="semester" id="semester">
                 <!-- 1238 -->
@@ -168,7 +168,7 @@
                 <option id='1242' value='Spring2024'>   
               </datalist>
               <!-- script used to set the default value of semester_code -->
-              <script>$('#semester_search').val($('#semester option#1238').attr('value'));</script>
+              <script>$('#semester_search').val($('#semester option#1242').attr('value'));</script>
               <!-- search by subject name -->
               <input list="sbj" type = "text" name = "subject_search" placeholder="Search by Subject" class = "text-center rounded" style="background-color: #F3F7F1;">
               <datalist id="sbj">

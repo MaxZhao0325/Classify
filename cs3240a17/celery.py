@@ -17,10 +17,10 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    # executes every 4 minute
-    'scraping-task-4-min': {
+    # executes every 5 minute
+    'scraping-task-5-min': {
         'task': 'classify.tasks.hacker',
-        'schedule': crontab(minute='*/4'),
+        'schedule': crontab(minute='*/5'),
     },
     # executes every 15 minutes
     # 'scraping-task-fifteen-min': {

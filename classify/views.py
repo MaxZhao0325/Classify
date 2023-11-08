@@ -78,16 +78,16 @@ def index(request):
     else:
     # if not the case when the user trys to add a course to the shoppingcart, reload the page with new department database
         # the default semester code
-        semester_code = '1238'
-        semester = 'Fall2023'
+        semester_code = '1242'
+        semester = 'Spring2024'
         # first check if the user selects a semester_code that is different from the current semester
         if(request.POST.get('semester_search')):
             if(request.POST.get('semester_search')=='Spring2023'):
                 semester_code = '1232'
                 semester='Spring2023'
-            if(request.POST.get('semester_search')=='Spring2024'):
-                semester_code = '1242'
-                semester='Spring2024'
+            if(request.POST.get('semester_search')=='Fall2023'):
+                semester_code = '1238'
+                semester='Fall2023'
 
         # second check if there is valid value for the search bar
         subject_sq = request.POST.get('subject_search', None)
